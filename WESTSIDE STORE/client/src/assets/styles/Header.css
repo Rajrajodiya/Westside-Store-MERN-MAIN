@@ -1,0 +1,207 @@
+.navbar {
+    padding: 10px 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    background: #444;
+    color: #fff;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+
+}
+
+.custom-navbar {
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.navbar-brand img {
+    width: 125px;
+    height: 50px;
+    mix-blend-mode: multiply;
+}
+
+.navbar-brand img {
+    height: 60px;
+}
+
+.navbar-nav .nav-item {
+    margin: 0 10px;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 600;
+    color: #302b2b;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 600;
+    color: #222 !important;
+    margin: 0 8px;
+    transition: color 0.2s;
+}
+
+.navbar-nav .nav-link.active {
+    color: #007bff !important;
+}
+
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu {
+    border: color(from color srgb 98 95 95);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ================= NAVBAR ICONS ================= */
+.navbar-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.navbar-icons a {
+    font-size: 1.2rem;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+
+.navbar-icons {
+    gap: 12px;
+}
+
+.icon-link {
+    font-size: 1.5rem;
+    color: #555 !important;
+    transition: color 0.2s;
+    position: relative;
+}
+
+/* ================= FOOTER ================= */
+footer {
+    background-color: #f8f9fa;
+    padding: 40px 0;
+    color: #333;
+}
+
+footer h5 {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+footer ul {
+    list-style: none;
+    padding: 0;
+}
+
+footer ul li a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer ul li a:hover {
+    color: #878787;
+}
+
+/* ================= NEWSLETTER FORM ================= */
+footer form input,
+footer form button {
+    border-radius: 5px;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+}
+
+/* ================= SOCIAL MEDIA ICONS ================= */
+.social-icon {
+    font-size: 1.5rem;
+    margin: 0 10px;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+/* ================= RESPONSIVE DESIGN ================= */
+@media (max-width: 992px) {
+    .navbar-nav {
+        text-align: center;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .text-center {
+        text-align: center !important;
+    }
+
+    .navbar-icons {
+        justify-content: center;
+    }
+}
+
+/* ================= REGISTRATION / LOGIN FORMS ================= */
+#main {
+    width: 1000px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    margin: auto;
+    padding: 20px 0;
+}
+
+.bgcolor {
+    background-color: black;
+    color: white;
+    padding: 5px 15px;
+    text-align: center;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="password"],
+#mobile,
+#input-otp,
+#mob,
+#last-name,
+#first-name,
+#email-id {
+    border: none;
+    border-bottom: 1px solid rgb(98, 95, 95);
+    width: 300px;
+    padding: 7px;
+    margin-bottom: 15px;
+    background: transparent;
+}
+
+#container {
+    display: flex;
+}
+
+#create {
+    width: 300px;
+    padding: 7px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: none;
+}
+
+/* ================= POSITIONING ================= */
+#bkcolor {
+    position: absolute;
+    z-index: -1;
+}
+
+#para {
+    color: rgb(102, 101, 101);
+}
+
+/* Add to your main CSS file */
+body,
+.main-content,
+.product-list-container {
+    margin-top: 80px;
+    /* Adjust based on your navbar height */
+}

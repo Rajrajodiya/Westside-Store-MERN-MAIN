@@ -1,0 +1,80 @@
+/* Layout Container */
+.layout-container {
+    display: flex;
+    flex-direction: column;
+    max-width: mx-auto;
+    min-height: 100%;  
+    margin-top: 50px; /* Adjusted for fixed navbar */
+    padding: 0 20px;
+
+    background-color: #fdfdfd;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main Content Area */
+.content-wrapper {
+    flex: 1; /* Pushes footer to bottom */
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Optional Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Responsive Typography */
+body {
+    line-height: 1.6;
+    font-size: 16px;
+    color: #333;
+    background-color: #fff;
+}
+
+/* Ensure Footer sticks to bottom if content is short */
+footer {
+    margin-top: auto;
+    background-color: #f1f1f1;
+    padding: 20px 0;
+    text-align: center;
+    color: #555;
+}
+
+/* Optional Header Styling */
+header {
+    background-color: #ffffff;
+    padding: 15px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Suggested Changes */
+.layout-container,
+.main-content,
+.product-list-container,
+.cart-container,
+.product-detail-container {
+  margin-top: 90px !important; /* Always below navbar */
+  padding: 24px 8px;
+  min-height: 70vh;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .content-wrapper {
+        padding: 15px;
+    }
+
+    header,
+    footer {
+        text-align: center;
+        padding: 15px;
+    }
+}
