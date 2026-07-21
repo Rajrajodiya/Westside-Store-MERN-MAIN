@@ -1,19 +1,14 @@
 function LoadingSpinner({ text = "Loading...", fullPage = false }) {
-  const style = fullPage
-    ? { display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh" }
-    : { display: "flex", justifyContent: "center", alignItems: "center", padding: "60px 0" };
-
   return (
-    <div style={style}>
+    <div
+      className="apple-loading"
+      style={{
+        minHeight: fullPage ? "70vh" : "200px",
+      }}
+    >
       <div className="text-center">
-        <div
-          className="spinner-border text-primary mb-3"
-          role="status"
-          style={{ width: "3rem", height: "3rem" }}
-        >
-          <span className="visually-hidden">Loading...</span>
-        </div>
-        <p className="text-muted">{text}</p>
+        <div className="apple-spinner" style={{ width: 36, height: 36, borderWidth: 3 }} />
+        <p className="apple-loading__text">{text}</p>
       </div>
     </div>
   );

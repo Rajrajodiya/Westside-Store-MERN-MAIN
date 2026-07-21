@@ -93,14 +93,7 @@ export default function ProductDetail() {
       .catch(() => setError("Failed to load product"));
   }, [category, id]);
 
-  // Early returns for edge cases
-  if (error) return <LoadingSpinner text={error} fullPage />;
-  if (!prod) return <LoadingSpinner text="Loading product details..." fullPage />;
-
-  const allImages = [prod.mainImage, ...(prod.otherImages || [])]
-    .filter((v, i, arr) => arr.indexOf(v) === i);
-
-  // ── Handlers ──────────────────────────────────────────────────────
+  // ── Handlers (BEFORE early returns — Rules of Hooks) ─────────────
   const handleImageSelect = useCallback((url) => {
     setMain(url);
     setZoom(true);
@@ -124,6 +117,13 @@ export default function ProductDetail() {
     else showInfo("Already in your wishlist.");
     navigate("/wishlist");
   }, [userKey, prod, navigate]);
+
+  // Early returns for edge cases
+  if (error) return <LoadingSpinner text={error} fullPage />;
+  if (!prod) return <LoadingSpinner text="Loading product details..." fullPage />;
+
+  const allImages = [prod.mainImage, ...(prod.otherImages || [])]
+    .filter((v, i, arr) => arr.indexOf(v) === i);
 
   return (
     <>

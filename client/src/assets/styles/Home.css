@@ -1,161 +1,173 @@
-/* Ensure carousels take full width with zero padding */
-.container-fluid {
-  padding: 0;
-  margin: 0;
-  margin-top: 90px;
-  width: 100%;
+/* ═══════════════════════════════════════════════════════════════════
+   Home — Apple-Inspired Carousels
+   ═══════════════════════════════════════════════════════════════════ */
+
+.apple-home {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-/* Style carousel images to fill width and scale height responsively */
-.carousel-inner img {
+.apple-home__banner {
+  width: 100%;
+  overflow: hidden;
+}
+
+.apple-home__banner img {
+  width: 100%;
+  height: 550px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Apple-style Carousel ──────────────────────────────────────── */
+.apple-carousel {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.apple-carousel__viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.apple-carousel__track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.apple-carousel__slide {
+  min-width: 100%;
+  flex-shrink: 0;
+}
+
+.apple-carousel__slide img {
   width: 100%;
   height: 500px;
-  /* Full screen height */
   object-fit: cover;
   display: block;
 }
 
-/* Banner image at the bottom */
-.banner-image {
-  width: 100%;
-  height: 100vh;
-  object-fit: cover;
+/* ── Navigation Buttons ────────────────────────────────────────── */
+.apple-carousel__btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  color: var(--color-ink);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 2;
+  opacity: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 
-/* Responsive height adjustments for smaller screens */
-@media (max-width: 992px) {
-
-  .carousel-inner img,
-  .banner-image {
-    height: 70vh;
-  }
+.apple-carousel:hover .apple-carousel__btn {
+  opacity: 1;
 }
 
-@media (max-width: 768px) {
-
-  .carousel-inner img,
-  .banner-image {
-    height: 60vh;
-  }
+.apple-carousel__btn:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
-@media (max-width: 576px) {
+.apple-carousel__btn--prev { left: 16px; }
+.apple-carousel__btn--next { right: 16px; }
 
-  .carousel-inner img,
-  .banner-image {
-    height: 100vh;
-    width: 100vw;
-  }
+/* ── Dots ──────────────────────────────────────────────────────── */
+.apple-carousel__dots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
 }
 
-*/
-
-/* Optional: Style navigation arrows for visibility */
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
-  padding: 20x;
-}
-
-/* Remove horizontal scroll */
-body,
-html {
-  margin: 0;
+.apple-carousel__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s;
   padding: 0;
-  overflow-x: hidden;
 }
 
-/* Remove default spacing */
-body,
-html {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  height: 100%;
+.apple-carousel__dot.active {
+  background: #fff;
+  width: 24px;
+  border-radius: 4px;
 }
 
-/* Make the carousel fill the full screen */
-.carousel,
-.carousel-inner,
-.carousel-item,
-.carousel-item img {
-  height: 100vh;
-  width: 100vw;
+.apple-carousel__dot:hover {
+  background: rgba(255, 255, 255, 0.8);
 }
 
-/* Ensure image fills the screen and maintains aspect ratio */
-.carousel-item img {
-  object-fit: cover;
-  display: block;
+/* ── Pause Badge ───────────────────────────────────────────────── */
+
+.apple-carousel__pause-badge {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius-full);
+  color: #fff;
+  font-size: 10px;
+  z-index: 2;
+  backdrop-filter: blur(4px);
 }
 
-/* Optional: Add background to control icons for visibility */
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 20px;
-  border-radius: 50%;
-}
-
-/* Remove padding/margin from outer container */
-.container-fluid {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-/* Responsive */
-@media (max-width: 576px) {
-  .navbar-nav .nav-link {
-    margin-right: 10px;
+/* ── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 834px) {
+  .apple-carousel__slide img {
+    height: 400px;
   }
-
-  .navbar-icons .nav-link {
-    margin-right: 10px;
-  }
-
-  .search-box {
-    width: 150px;
+  .apple-home__banner img {
+    height: 400px;
   }
 }
 
-@media (max-width: 768px) {
-  .text-center {
-    text-align: center !important;
+@media (max-width: 640px) {
+  .apple-carousel__slide img {
+    height: 300px;
   }
-
-  .navbar-brand img {
-    height: 50px;
+  .apple-carousel__btn {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
   }
-
-  .search-box {
-    width: 200px;
-  }
-
-  .carousel-inner img {
+  .apple-carousel__btn--prev { left: 8px; }
+  .apple-carousel__btn--next { right: 8px; }
+  .apple-home__banner img {
     height: 300px;
   }
 }
 
-@media (max-width: 992px) {
-  .search-box {
-    max-width: 100%;
-    margin: 10px 0;
+@media (max-width: 420px) {
+  .apple-carousel__slide img {
+    height: 220px;
   }
-
-  .navbar-icons {
-    flex-direction: row;
-    justify-content: center;
-    margin-top: 10px;
-  }
-}
-
-/* Optional: Fix button size on small screens */
-@media (max-width: 576px) {
-
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    padding: 10px;
+  .apple-home__banner img {
+    height: 220px;
   }
 }

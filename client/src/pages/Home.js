@@ -1,4 +1,7 @@
+import { memo, useEffect, useState } from "react";
 import SeoHelmet from "../components/SeoHelmet";
+import "../assets/styles/Home.css";
+
 import e1 from "../assets/Images/1.webp";
 import e2 from "../assets/Images/2.webp";
 import e3 from "../assets/Images/3.webp";
@@ -20,44 +23,84 @@ import d4 from "../assets/Images/WS_Web_Hero_Banner.webp";
 import x2 from "../assets/Images/m13.webp";
 import x1 from "../assets/Images/m6.webp";
 
-const CarouselSection = ({ id, images }) => (
-  <div className="container-fluid my-3">
-    <div id={id} className="carousel slide" data-bs-ride="carousel">
-      <div className="carousel-indicators">
-        {images.map((_, index) => (
-          <button key={index} data-bs-target={`#${id}`} data-bs-slide-to={index} className={index === 0 ? "active" : ""} aria-label={`Slide ${index + 1}`}></button>
-        ))}
+const CAROUSEL_SECTIONS = [
+  { id: "carousel1", images: [c1, c2, c3, c4, c5, c6] },
+  { id: "carousel2", images: [d1, d2, d3] },
+  { id: "carousel3", images: [e1, e2, e3, e4, e5, e6] },
+  { id: "carousel4", images: [f1, f2] },
+  { id: "carousel5", images: [x1, x2] },
+];
+
+// ── Reusable Carousel Sub-component ──────────────────────────────
+const CarouselSection = memo(({ id, images }) => {
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  // Autoplay every 4 seconds, pause on hover
+  useEffect(() => {
+    if (paused) return;
+    const timer = setInterval(() => {
+      setCurrent((p) => (p === images.length - 1 ? 0 : p + 1));
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [images.length, paused]);
+
+  const prev = () => { setCurrent((p) => (p === 0 ? images.length - 1 : p - 1)); };
+  const next = () => { setCurrent((p) => (p === images.length - 1 ? 0 : p + 1)); };
+
+  return (
+    <div className="apple-carousel" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+      <div className="apple-carousel__viewport">
+        <div
+          className="apple-carousel__track"
+          style={{ transform: `translateX(-${current * 100}%)` }}
+        >
+          {images.map((img, i) => (
+            <div key={i} className="apple-carousel__slide">
+              <img src={img} alt={`Slide ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} />
+            </div>
+          ))}
+        </div>
+
+        <button className="apple-carousel__btn apple-carousel__btn--prev" onClick={prev} aria-label="Previous">
+          <i className="fas fa-chevron-left" />
+        </button>
+        <button className="apple-carousel__btn apple-carousel__btn--next" onClick={next} aria-label="Next">
+          <i className="fas fa-chevron-right" />
+        </button>
+
+        {/* Pause indicator */}
+        {paused && <div className="apple-carousel__pause-badge"><i className="fas fa-pause" /></div>}
+
+        <div className="apple-carousel__dots">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              className={`apple-carousel__dot${i === current ? " active" : ""}`}
+              onClick={() => setCurrent(i)}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
       </div>
-      <div className="carousel-inner">
-        {images.map((img, index) => (
-          <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
-            <img src={img} alt={`Slide ${index + 1}`} loading="lazy" className="d-block w-100" style={{ height: "500px", objectFit: "cover" }} />
-          </div>
-        ))}
-      </div>
-      <button className="carousel-control-prev" type="button" data-bs-target={`#${id}`} data-bs-slide="prev">
-        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span className="visually-hidden">Previous</span>
-      </button>
-      <button className="carousel-control-next" type="button" data-bs-target={`#${id}`} data-bs-slide="next">
-        <span className="carousel-control-next-icon" aria-hidden="true"></span>
-        <span className="visually-hidden">Next</span>
-      </button>
     </div>
-  </div>
-);
+  );
+});
 
 function Home() {
   return (
     <>
-      <SeoHelmet title="Home" description="Shop the latest fashion trends for women, men, kids, beauty, and home at WestSide Store." />
-      <CarouselSection id="carousel1" images={[c1, c2, c3, c4, c5, c6]} />
-      <CarouselSection id="carousel2" images={[d1, d2, d3]} />
-      <CarouselSection id="carousel3" images={[e1, e2, e3, e4, e5, e6]} />
-      <CarouselSection id="carousel4" images={[f1, f2]} />
-      <CarouselSection id="carousel5" images={[x1, x2]} />
-      <div className="container-fluid my-3">
-        <img src={d4} alt="Final Banner" loading="lazy" className="d-block w-100" style={{ height: "550px", objectFit: "fill" }} />
+      <SeoHelmet
+        title="Home"
+        description="Shop the latest fashion trends for women, men, kids, beauty, and home at WestSide Store."
+      />
+      <div className="apple-home">
+        {CAROUSEL_SECTIONS.map(({ id, images }) => (
+          <CarouselSection key={id} id={id} images={images} />
+        ))}
+        <div className="apple-home__banner">
+          <img src={d4} alt="Final Banner" loading="lazy" />
+        </div>
       </div>
     </>
   );

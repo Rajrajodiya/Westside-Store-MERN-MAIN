@@ -1,0 +1,110 @@
+/* ═══════════════════════════════════════════════════════════════════
+   About — Apple-Inspired
+   ═══════════════════════════════════════════════════════════════════ */
+
+.apple-about__title {
+  font-family: var(--font-display);
+  font-size: var(--text-display-lg);
+  font-weight: var(--text-display-lg-weight);
+  color: var(--color-ink);
+  margin: 0 0 var(--space-xl);
+}
+
+.apple-about__tabs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxl);
+}
+
+.apple-about__tab {
+  background: var(--color-canvas);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  border: 1px solid var(--color-hairline);
+}
+
+.apple-about__tab h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-tagline);
+  font-weight: var(--text-tagline-weight);
+  color: var(--color-ink);
+  margin: 0 0 var(--space-md);
+}
+
+.apple-about__lead {
+  font-size: var(--text-body-strong);
+  font-weight: var(--text-body-strong-weight);
+  line-height: var(--text-body-strong-leading);
+  color: var(--color-ink);
+  margin-bottom: var(--space-md);
+}
+
+.apple-about__tab p {
+  font-size: var(--text-body);
+  color: var(--color-body);
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+}
+
+.apple-about__subtitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  font-weight: var(--text-lead-weight);
+  color: var(--color-ink);
+  margin: var(--space-xl) 0 var(--space-md);
+}
+
+.apple-about__brands {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.apple-about__brand-card {
+  background: var(--color-canvas-parchment);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  transition: background 0.2s;
+}
+
+.apple-about__brand-card:hover {
+  background: var(--color-surface-pearl);
+}
+
+.apple-about__brand-card h5 {
+  font-family: var(--font-display);
+  font-size: var(--text-body-strong);
+  font-weight: var(--text-body-strong-weight);
+  color: var(--color-ink);
+  margin: 0 0 var(--space-xs);
+}
+
+.apple-about__brand-card p {
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted-48);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.apple-breadcrumb {
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted-48);
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md) 0;
+}
+
+.apple-breadcrumb a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.apple-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .apple-about__brands {
+    grid-template-columns: 1fr;
+  }
+}

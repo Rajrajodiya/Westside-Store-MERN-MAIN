@@ -15,9 +15,13 @@ const paymentRoutes = require("../routes/payment");
 const uploadRoutes = require("../routes/upload");
 const adminRoutes = require("../routes/admin");
 const { authMiddleware } = require("../middleware/auth");
-const { generalLimiter, authLimiter, contactLimiter, orderLimiter, sanitizeMongo, sanitizeXss } = require("../middleware/security");
+const { generalLimiter, authLimiter, contactLimiter, orderLimiter, sanitizeXss } = require("../middleware/security");
+const { sanitize } = require("express-mongo-sanitize");
 
 const app = express();
+
+// Trust proxy (required when behind a load balancer / Vercel)
+app.set("trust proxy", 1);
 
 // ─── Security & Headers ─────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false }));
@@ -39,7 +43,22 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // ─── Input Sanitizers ───────────────────────────────────────────────
-app.use(sanitizeMongo);
+// NOTE: Express 5 uses a getter-only `req.query` property, so we cannot
+// assign to it directly (express-mongo-sanitize v2.x breaks). Instead,
+// we sanitize each request property in place via a custom handler.
+app.use((req, res, next) => {
+  if (req.body) { try { req.body = sanitize(req.body); } catch {} }
+  if (req.params) { try { req.params = sanitize(req.params); } catch {} }
+  if (req.query) {
+    // req.query is a getter in Express 5 — mutate the returned object
+    try {
+      const sanitized = sanitize({ ...req.query });
+      Object.keys(req.query).forEach((k) => delete req.query[k]);
+      Object.keys(sanitized).forEach((k) => { req.query[k] = sanitized[k]; });
+    } catch {}
+  }
+  next();
+});
 app.use(sanitizeXss);
 
 // ─── Logging ────────────────────────────────────────────────────────

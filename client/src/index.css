@@ -233,6 +233,21 @@ a:hover {
   to { transform: rotate(360deg); }
 }
 
+/* ── Loading (used by LoadingSpinner) ──────────────────────────── */
+
+.apple-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 0;
+}
+
+.apple-loading__text {
+  margin-top: 16px;
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted-48);
+}
+
 /* ── Scrollbar (Webkit) ───────────────────────────────────────── */
 
 ::-webkit-scrollbar {

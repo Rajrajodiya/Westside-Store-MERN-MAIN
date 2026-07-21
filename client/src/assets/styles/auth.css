@@ -1,187 +1,194 @@
-/* === Base Layout === */
-body {
-  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
-  font-family: 'Segoe UI', Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  color: #222;
-}
+/* ═══════════════════════════════════════════════════════════════════
+   Auth — Apple-Inspired
+   ═══════════════════════════════════════════════════════════════════ */
 
-.container {
-  min-height: 100vh;
+.apple-auth {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  margin-top: 80px;
+  min-height: calc(100vh - 44px);
+  padding: var(--space-xl) var(--space-lg);
+  background: var(--color-canvas);
 }
 
-.main-content {
-  margin-top: 90px;
-  padding: 24px 8px;
-  min-height: 70vh;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-}
-
-/* === Card Design === */
-.card {
+.apple-auth__card {
   width: 100%;
-  max-width: 500px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  border: none;
-  padding: 2rem;
-  transition: all 0.3s ease-in-out;
+  max-width: 420px;
+  background: var(--color-canvas);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xxl) var(--space-xl);
+  animation: apple-fade-in 0.4s ease-out;
 }
 
-.card:hover {
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+.apple-auth__header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
 }
 
-/* === Typography === */
-h1,
-h2,
-h3 {
+.apple-auth__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-body);
   font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--space-lg);
 }
 
-p {
-  color: #555;
-  font-size: 0.95rem;
+.apple-auth__brand i {
+  font-size: 22px;
+  color: var(--color-ink);
 }
 
-/* === Buttons === */
-.btn {
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 1rem;
-  padding: 10px 20px;
+.apple-auth__title {
+  font-family: var(--font-display);
+  font-size: var(--text-display-md);
+  font-weight: var(--text-display-md-weight);
+  line-height: var(--text-display-md-leading);
+  letter-spacing: var(--text-display-md-tracking);
+  color: var(--color-ink);
+  margin: 0 0 var(--space-xs);
+}
+
+.apple-auth__subtitle {
+  font-size: var(--text-body);
+  color: var(--color-ink-muted-48);
+  margin: 0;
+}
+
+.apple-auth__tabs {
+  display: flex;
+  background: var(--color-canvas-parchment);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  margin-bottom: var(--space-xl);
+}
+
+.apple-auth__tab {
+  flex: 1;
+  padding: 9px 0;
   border: none;
+  background: transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-caption-strong);
+  font-weight: var(--text-caption-strong-weight);
+  color: var(--color-ink-muted-48);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.btn-success {
-  background-color: #28a745;
-  color: #fff;
-}
-
-.btn-primary:hover,
-.btn-success:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.d-flex .btn {
-  min-width: 120px;
-}
-
-/* === Form === */
-.form-label {
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: #333;
-}
-
-.form-control {
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  padding: 12px 16px;
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.form-control:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
-}
-
-input,
-select,
-textarea,
-button {
+  transition: all 0.25s;
   font-family: inherit;
-  font-size: 1rem;
 }
 
-input,
-select,
-textarea {
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  padding: 10px 14px;
-  margin-bottom: 1rem;
+.apple-auth__tab.active {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.apple-auth__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.apple-auth__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+.apple-auth__label {
+  font-size: var(--text-caption-strong);
+  font-weight: var(--text-caption-strong-weight);
+  color: var(--color-ink);
+}
+
+.apple-auth__input {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  color: var(--color-ink);
+  background: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  height: 48px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
   width: 100%;
   box-sizing: border-box;
 }
 
-button,
-.btn {
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 1rem;
-  padding: 10px 20px;
+.apple-auth__input::placeholder {
+  color: var(--color-ink-muted-48);
+}
+
+.apple-auth__input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.apple-auth__forgot {
+  text-align: right;
+  margin-top: -4px;
+}
+
+.apple-auth__forgot a {
+  font-size: var(--text-caption);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.apple-auth__forgot a:hover {
+  text-decoration: underline;
+}
+
+.apple-auth__error {
+  font-size: var(--text-caption);
+  color: #dc3545;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.apple-auth__footer {
+  text-align: center;
+  margin-top: var(--space-lg);
+  border-top: 1px solid var(--color-divider-soft);
+  padding-top: var(--space-lg);
+}
+
+.apple-auth__footer p {
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted-48);
+  margin: 0;
+}
+
+.apple-auth__link-btn {
+  background: none;
   border: none;
+  color: var(--color-primary);
+  font-size: var(--text-caption);
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  padding: 0;
+  font-family: inherit;
+  text-decoration: underline;
 }
 
-button:active,
-.btn:active {
-  opacity: 0.8;
+.apple-auth__link-btn:hover {
+  color: var(--color-primary-focus);
 }
 
-/* === Alerts === */
-.alert {
-  border-radius: 8px;
-  font-size: 0.95rem;
-  padding: 0.75rem 1rem;
-  margin-top: 10px;
-}
-
-/* === Responsive === */
-@media (max-width: 768px) {
-  .card {
-    padding: 1.5rem;
+/* ── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .apple-auth {
+    padding: var(--space-lg) var(--space-md);
   }
-
-  .container {
-    margin-top: 40px;
+  .apple-auth__card {
+    padding: var(--space-xl) var(--space-lg);
   }
-
-  .d-flex {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .d-flex .btn {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .card {
-    padding: 1rem;
-  }
-
-  .form-control {
-    font-size: 0.95rem;
-    padding: 10px 12px;
-  }
-
-  .btn {
-    font-size: 0.95rem;
-    padding: 8px 16px;
+  .apple-auth__title {
+    font-size: var(--text-display-lg);
   }
 }

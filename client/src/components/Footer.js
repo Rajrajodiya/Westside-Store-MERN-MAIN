@@ -1,73 +1,70 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import I1 from "../assets/Images/1.svg";
-import I2 from "../assets/Images/2.svg";
 import "../assets/styles/Footer.css";
+
+const FOOTER_LINKS = {
+  Shop: [
+    { to: "/women", label: "Women" },
+    { to: "/men", label: "Men" },
+    { to: "/kids", label: "Kids" },
+    { to: "/beauty", label: "Beauty" },
+    { to: "/homedecor", label: "Home" },
+  ],
+  Connect: [
+    { to: "/about", label: "About Us" },
+    { to: "/contact", label: "Contact Us" },
+    { to: "https://www.trentlimited.com/store-locator/", label: "Store Locator", external: true },
+  ],
+  Policies: [
+    { to: "https://www.westside.com/pages/terms-conditions", label: "Terms", external: true },
+    { to: "https://www.westside.com/pages/privacy-policy", label: "Privacy", external: true },
+    { to: "https://www.westside.com/pages/return-policy", label: "Returns", external: true },
+  ],
+};
 
 function Footer() {
   return (
-    <footer className="bg-light text-dark pt-5 mt-auto">
-      <div className="container-fluid px-5">
-        <div className="row">
-          {/* Download the App */}
-          <div className="col-md-3 mb-4">
-            <h5>DOWNLOAD THE APP</h5>
-            <a href="https://play.google.com/store/apps"  target="_blank" rel="noopener noreferrer">
-              <img src={I1} className="img-fluid mb-2" alt="Google Play" />
-            </a>
-            <a href="https://www.apple.com/" target="_blank" rel="noopener noreferrer">
-              <img src={I2} className="img-fluid" alt="App Store" />
-            </a>
-          </div>
-
-          {/* Shop Links */}
-          <div className="col-md-3 mb-4">
-            <h5>SHOP</h5>
-            <ul className="list-unstyled">
-              <li><a href="/women">WOMAN</a></li>
-              <li><a href="/men">MAN</a></li>
-              <li><a href="/kids">KIDS</a></li>
-              <li><a href="/beauty">BEAUTY</a></li>
-              <li><a href="/homedecor">HOME</a></li>
-            </ul>
-          </div>
-
-          {/* Site & Stores */}
-          <div className="col-md-3 mb-4">
-            <h5>SITES & STORES</h5>
-            <ul className="list-unstyled">
-              <li><a href="/about">ABOUT US</a></li>
-              <li><a href="/contact">CONTACT US</a></li>
-              <li><a href="https://www.trentlimited.com/store-locator/" target="_blank" rel="noopener noreferrer">STORE LOCATOR</a></li>
-            </ul>
-          </div>
-
-          {/* Newsletter Subscription */}
-          <div className="col-md-3 mb-4">
-            <h5>JOIN OUR NEWSLETTER</h5>
-            <p>Get the latest updates from our stores</p>
-            <form>
-              <input type="email" className="form-control mb-2" placeholder="Email Id" required />
-              <button type="submit" className="btn btn-dark w-100">SUBSCRIBE</button>
-            </form>
+    <footer className="apple-footer">
+      <div className="apple-footer__inner">
+        <div className="apple-footer__grid">
+          {Object.entries(FOOTER_LINKS).map(([heading, links]) => (
+            <div key={heading} className="apple-footer__col">
+              <h5 className="apple-footer__heading">{heading}</h5>
+              <ul className="apple-footer__links">
+                {links.map((link) => (
+                  <li key={link.label}>
+                    {link.external ? (
+                      <a href={link.to} target="_blank" rel="noopener noreferrer" className="apple-footer__link">
+                        {link.label}
+                      </a>
+                    ) : (
+                      <a href={link.to} className="apple-footer__link">{link.label}</a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <div className="apple-footer__col">
+            <h5 className="apple-footer__heading">Stay Connected</h5>
+            <div className="apple-footer__social">
+              <a href="https://www.facebook.com/westsidefanpage/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <i className="fab fa-facebook-f" />
+              </a>
+              <a href="https://www.instagram.com/westsidestores/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <i className="fab fa-instagram" />
+              </a>
+              <a href="https://www.youtube.com/user/WestsideStores" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <i className="fab fa-youtube" />
+              </a>
+            </div>
+            <p className="apple-footer__tagline">
+              First Price. Right Price.
+            </p>
           </div>
         </div>
-
-        {/* Terms & Conditions */}
-        <div className="row border-top pt-3 text-center">
-          <div className="col-md-12">
-            <a href="https://www.westside.com/pages/terms-conditions" target="_blank" rel="noopener noreferrer">TERMS & CONDITIONS</a> |
-            <a href="https://www.westside.com/pages/privacy-policy" target="_blank" rel="noopener noreferrer"> PRIVACY POLICY</a> |
-            <a href="https://www.westside.com/pages/return-policy" target="_blank" rel="noopener noreferrer"> RETURN POLICY</a>
-          </div>
-        </div>
-
-        {/* Social Icons */}
-        <div className="row text-center pt-3">
-          <div className="col-md-12">
-            <a href="https://www.facebook.com/westsidefanpage/" target="_blank" rel="noopener noreferrer" className="social-icon mx-2"><i className="fab fa-facebook fa-lg"></i></a>
-            <a href="https://www.instagram.com/westsidestores/" target="_blank" rel="noopener noreferrer" className="social-icon mx-2"><i className="fab fa-instagram fa-lg"></i></a>
-            <a href="https://www.youtube.com/user/WestsideStores" target="_blank" rel="noopener noreferrer" className="social-icon mx-2"><i className="fab fa-youtube fa-lg"></i></a>
-          </div>
+        <div className="apple-footer__bottom">
+          <span className="apple-footer__copy">
+            © {new Date().getFullYear()} WestSide Store — Trent Ltd. All rights reserved.
+          </span>
         </div>
       </div>
     </footer>

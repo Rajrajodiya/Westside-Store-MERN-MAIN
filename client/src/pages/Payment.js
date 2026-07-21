@@ -133,30 +133,7 @@ export default function Payment() {
 
   const totals = useMemo(() => computeCartTotals(cart), [cart]);
 
-  // Early return: not logged in
-  if (!isLoggedIn) {
-    return (
-      <div className="cart-empty">
-        <h3>Please log in to checkout.</h3>
-      </div>
-    );
-  }
-
-  // Early return: empty cart
-  if (cart.length === 0) {
-    return (
-      <div className="cart-empty">
-        <h3>Your cart is empty.</h3>
-      </div>
-    );
-  }
-
-  // Early return: thank you screen
-  if (showThankYou) {
-    return <ThankYou orderNumber={orderNumber} onClose={() => { setShowThankYou(false); window.location.href = "/"; }} />;
-  }
-
-  // ── Handlers ──────────────────────────────────────────────────────
+  // ── Handlers (BEFORE early returns — Rules of Hooks) ──────────────
   const handlePay = useCallback(async (e) => {
     e.preventDefault();
     setError("");
@@ -202,6 +179,29 @@ export default function Payment() {
     } catch { setError("Payment processing failed."); }
     setIsProcessing(false);
   }, [method, card, upi, receiver, login, cart, totals, userKey]);
+
+  // Early return: not logged in
+  if (!isLoggedIn) {
+    return (
+      <div className="cart-empty">
+        <h3>Please log in to checkout.</h3>
+      </div>
+    );
+  }
+
+  // Early return: empty cart
+  if (cart.length === 0) {
+    return (
+      <div className="cart-empty">
+        <h3>Your cart is empty.</h3>
+      </div>
+    );
+  }
+
+  // Early return: thank you screen
+  if (showThankYou) {
+    return <ThankYou orderNumber={orderNumber} onClose={() => { setShowThankYou(false); window.location.href = "/"; }} />;
+  }
 
   const paymentForm = method === "card" ? <CreditCardForm card={card} onChange={setCard} />
     : method === "upi" ? (
