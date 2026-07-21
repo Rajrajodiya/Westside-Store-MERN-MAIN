@@ -15,7 +15,7 @@ const paymentRoutes = require("../routes/payment");
 const uploadRoutes = require("../routes/upload");
 const adminRoutes = require("../routes/admin");
 const { authMiddleware } = require("../middleware/auth");
-const { generalLimiter, authLimiter, contactLimiter, orderLimiter, sanitizeXss } = require("../middleware/security");
+const { generalLimiter, authLimiter, contactLimiter, orderLimiter } = require("../middleware/security");
 const { sanitize } = require("express-mongo-sanitize");
 
 const app = express();
@@ -59,7 +59,10 @@ app.use((req, res, next) => {
   }
   next();
 });
-app.use(sanitizeXss);
+// NOTE: xss-clean removed intentionally — Express 5 makes req.query a getter-only
+// property, which breaks libraries that reassign it. React's JSX escaping already
+// handles XSS protection on the frontend, and our custom sanitize middleware above
+// handles NoSQL injection prevention on the backend.
 
 // ─── Logging ────────────────────────────────────────────────────────
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
@@ -96,6 +99,7 @@ app.use("/api/", (req, res) => {
 
 // Global error handler — catches AppError + unexpected errors
 app.use((err, req, res, next) => {
+  console.error("❌ Unhandled error:", err);
   // AppError — known operational failures
   if (err.isOperational) {
     return res.status(err.statusCode).json({
@@ -105,7 +109,6 @@ app.use((err, req, res, next) => {
     });
   }
   // Programming / unknown errors — log and return generic message
-  console.error("Unhandled error:", err);
   res.status(500).json({ status: "error", message: "Internal server error" });
 });
 
