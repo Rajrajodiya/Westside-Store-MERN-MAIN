@@ -1,0 +1,55 @@
+{
+  "name": "westside-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WestSide Store - Monolithic MERN e-commerce application",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.0.0",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.10.0",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^8.6.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.4",
+    "morgan": "^1.10.0",
+    "multer": "^2.2.0",
+    "nodemailer": "^9.0.3",
+    "pdfkit": "^0.19.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-helmet-async": "^3.0.0",
+    "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^7.6.3",
+    "react-scripts": "5.0.1",
+    "stripe": "^22.3.2",
+    "web-vitals": "^2.1.4",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "source-map-explorer": "^2.5.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "seed": "node seed.js",
+    "seed:force": "node seed.js --force",
+    "analyze": "GENERATE_SOURCEMAP=true react-scripts build && npx source-map-explorer 'build/static/js/*.js'"
+  },
+  "proxy": "http://localhost:5000",
+  "eslintConfig": {
+    "extends": ["react-app"]
+  },
+  "browserslist": {
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+  }
+}
