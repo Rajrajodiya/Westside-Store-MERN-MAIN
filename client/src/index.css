@@ -1,13 +1,247 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ═══════════════════════════════════════════════════════════════════
+   WestSide Store — Apple-Inspired Global Base Styles
+   Design System: DESIGN.md
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import "./assets/styles/design-tokens.css";
+
+/* ── Reset & Base ─────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: var(--text-body-weight);
+  line-height: var(--text-body-leading);
+  letter-spacing: var(--text-body-tracking);
+  color: var(--color-body);
+  background-color: var(--color-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Typography ───────────────────────────────────────────────── */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  margin-top: 0;
+}
+
+p {
+  margin-top: 0;
+  color: var(--color-body);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+a:hover {
+  opacity: 0.85;
+}
+
+/* ── Apple Pill Buttons ───────────────────────────────────────── */
+
+.apple-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: var(--text-body-weight);
+  line-height: 1;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  padding: 11px 22px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  transition: opacity 0.2s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.apple-btn:hover {
+  opacity: 0.92;
+}
+
+.apple-btn:active {
+  transform: scale(0.95);
+}
+
+.apple-btn:focus-visible {
+  outline: 2px solid var(--color-primary-focus);
+  outline-offset: 2px;
+}
+
+.apple-btn--secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.apple-btn--dark {
+  background: var(--color-ink);
+  color: var(--color-on-dark);
+  font-size: var(--text-button-utility);
+  font-weight: var(--text-button-utility-weight);
+  border-radius: var(--radius-sm);
+  padding: 8px 15px;
+}
+
+.apple-btn--pearl {
+  background: var(--color-surface-pearl);
+  color: var(--color-ink-muted-80);
+  font-size: var(--text-caption);
+  font-weight: var(--text-caption-weight);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  box-shadow: var(--ring-divider);
+}
+
+.apple-btn--large {
+  font-size: var(--text-button-large);
+  font-weight: var(--text-button-large-weight);
+  padding: 14px 28px;
+}
+
+.apple-btn--circular {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: var(--radius-full);
+  background: rgba(210, 210, 215, 0.64);
+  color: var(--color-ink);
+  font-size: 18px;
+}
+
+/* ── Apple Pill Input ─────────────────────────────────────────── */
+
+.apple-input {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: var(--text-body-weight);
+  color: var(--color-ink);
+  background: var(--color-canvas);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-pill);
+  padding: 12px 20px;
+  height: 44px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+
+.apple-input::placeholder {
+  color: var(--color-ink-muted-48);
+}
+
+.apple-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+/* ── Section Spacing ──────────────────────────────────────────── */
+
+.apple-section {
+  padding: var(--space-section) 0;
+}
+
+.apple-section--light {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+.apple-section--parchment {
+  background: var(--color-canvas-parchment);
+  color: var(--color-ink);
+}
+
+.apple-section--dark {
+  background: var(--color-surface-tile-1);
+  color: var(--color-on-dark);
+}
+
+.apple-section--dark-2 {
+  background: var(--color-surface-tile-2);
+  color: var(--color-on-dark);
+}
+
+.apple-section--dark-3 {
+  background: var(--color-surface-tile-3);
+  color: var(--color-on-dark);
+}
+
+/* ── Utility ──────────────────────────────────────────────────── */
+
+.apple-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.apple-container--wide {
+  max-width: 1440px;
+}
+
+/* ── Animations ───────────────────────────────────────────────── */
+
+@keyframes apple-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.apple-fade-in {
+  animation: apple-fade-in 0.5s ease-out forwards;
+}
+
+/* ── Loading Spinner ──────────────────────────────────────────── */
+
+.apple-spinner {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--color-hairline);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: apple-spin 0.8s linear infinite;
+}
+
+@keyframes apple-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Scrollbar (Webkit) ───────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-hairline);
+  border-radius: 3px;
 }

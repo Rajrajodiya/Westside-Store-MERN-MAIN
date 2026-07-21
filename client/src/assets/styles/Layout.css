@@ -1,52 +1,31 @@
-/* Main Content Area */
+/* ═══════════════════════════════════════════════════════════════════
+   Layout — Apple-Inspired
+   ═══════════════════════════════════════════════════════════════════ */
+
 .content-wrapper {
   flex: 1;
-  max-width: 100%;
   width: 100%;
-  height: auto;
   margin: 0 auto;
-  box-sizing: border-box;
+  padding-top: var(--nav-global-height);
 }
 
-/* Ensure Footer sticks to bottom if content is short */
-footer {
-  margin-top: auto;
-  background-color: #f1f1f1;
-  padding: 20px 0;
-  text-align: center;
-  color: #555;
-}
-
-/* Optional Header Styling */
-header {
-  background-color: #ffffff;
-  padding: 15px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Ensure containers are below the fixed navbar */
-.layout-container,
+/* Main content areas — no decorative shadows, just clean surface */
 .main-content,
 .product-list-container,
 .cart-container,
 .product-detail-container {
-  margin-top: 90px !important;
-  padding: 24px 8px;
   min-height: 70vh;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  background: var(--color-canvas);
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .content-wrapper {
-    padding: 15px;
-  }
+/* Ensure footer sticks to bottom */
+footer {
+  margin-top: auto;
+}
 
-  header,
-  footer {
-    text-align: center;
-    padding: 15px;
+/* Responsive */
+@media (max-width: 834px) {
+  .content-wrapper {
+    padding-top: var(--nav-global-height);
   }
 }

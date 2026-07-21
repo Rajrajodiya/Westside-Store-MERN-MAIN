@@ -1,23 +1,21 @@
-const jwt = require("jsonwebtoken");
-
-const JWT_SECRET = process.env.JWT_SECRET || "westside-store-jwt-secret-key-2026";
+const { extractToken, verifyToken, JWT_SECRET } = require("../utils/token");
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer "))
-    return res.status(401).json({ status: "error", message: "Access denied. No token provided." });
   try {
-    req.user = jwt.verify(authHeader.split(" ")[1], JWT_SECRET);
+    req.user = verifyToken(extractToken(req.headers.authorization));
     next();
-  } catch {
+  } catch (err) {
+    if (err.isOperational) return res.status(401).json(err);
     return res.status(401).json({ status: "error", message: "Invalid or expired token." });
   }
 };
 
 const optionalAuth = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    try { req.user = jwt.verify(authHeader.split(" ")[1], JWT_SECRET); } catch {}
+  try {
+    const token = extractToken(req.headers.authorization);
+    req.user = jwt.verify(token, JWT_SECRET);
+  } catch {
+    // Silently continue without auth — optional
   }
   next();
 };

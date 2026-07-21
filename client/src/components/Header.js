@@ -1,213 +1,175 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/Images/logo.png";
+import useAuth from "../hooks/useAuth";
 import "../assets/styles/Header.css";
 
+// ── Data-driven nav links (declarative, DRY) ──────────────────────
+const NAV_LINKS = [
+  { to: "/women", label: "Women" },
+  { to: "/men", label: "Men" },
+  { to: "/kids", label: "Kids" },
+  { to: "/beauty", label: "Beauty" },
+  { to: "/jewellery", label: "Fine Jewellery" },
+  { to: "/homedecor", label: "Home" },
+];
+
 function Header() {
-    const [loginDetail, setLoginDetail] = useState(null);
-    const [open, setOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState([]);
-    const [showSearch, setShowSearch] = useState(false);
-    const [cartCount, setCartCount] = useState(0);
+  const { login, isLoggedIn, cartCount, logout } = useAuth();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearch, setShowSearch] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const debounceTimer = useRef(null);
+  const abortController = useRef(null);
 
-    const navigate = useNavigate();
-    const debounceTimer = useRef(null);
-    const abortController = useRef(null);
+  // Cleanup on unmount
+  useEffect(() => () => abortController.current?.abort(), []);
 
-    useEffect(() => {
-        const loginData = JSON.parse(localStorage.getItem("login_detail"));
-        setLoginDetail(loginData);
-        if (loginData) {
-            const userKey = loginData.email || loginData.emailOrPhone || "guest";
-            const cart = JSON.parse(localStorage.getItem(`cart_${userKey}`));
-            setCartCount(cart?.length || 0);
+  // ── Search (debounced, with cancellation) ────────────────────────
+  const handleSearchChange = useCallback((e) => {
+    const q = e.target.value;
+    setSearchQuery(q);
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    abortController.current?.abort();
+
+    if (q.trim().length < 2) {
+      setSearchResults([]);
+      setShowSearch(false);
+      return;
+    }
+
+    debounceTimer.current = setTimeout(async () => {
+      abortController.current = new AbortController();
+      try {
+        const res = await fetch(`/api/products/search?q=${encodeURIComponent(q)}`, {
+          signal: abortController.current.signal,
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+          setSearchResults(data.results.slice(0, 6));
+          setShowSearch(true);
         }
-        const updateCartCount = () => {
-            const data = JSON.parse(localStorage.getItem("login_detail"));
-            if (data) {
-                const key = data.email || data.emailOrPhone || "guest";
-                const cart = JSON.parse(localStorage.getItem(`cart_${key}`));
-                setCartCount(cart?.length || 0);
-            }
-        };
-        window.addEventListener("storage", updateCartCount);
-        window.addEventListener("cartUpdated", updateCartCount);
-        return () => {
-            window.removeEventListener("storage", updateCartCount);
-            window.removeEventListener("cartUpdated", updateCartCount);
-            // Abort any in-flight search request on unmount
-            if (abortController.current) abortController.current.abort();
-        };
-    }, []);
+      } catch { /* aborted — silently ignore */ }
+    }, 300);
+  }, []);
 
-    const handleLogout = useCallback(() => {
-        localStorage.removeItem("login_detail");
-        setLoginDetail(null);
-        navigate("/");
-        window.location.reload();
-    }, [navigate]);
+  const handleSearchSubmit = useCallback((e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setShowSearch(false);
+      navigate(`/men?search=${encodeURIComponent(searchQuery)}`);
+    }
+  }, [searchQuery, navigate]);
 
-    const handleWishlistClick = useCallback((e) => {
-        e.preventDefault();
-        navigate(loginDetail ? "/wishlist" : "/signup");
-    }, [loginDetail, navigate]);
+  const handleSearchSelect = useCallback((product) => {
+    setShowSearch(false);
+    setSearchQuery("");
+    navigate(`/${product.category}/${product._id}`);
+  }, [navigate]);
 
-    const handleCartClick = useCallback((e) => {
-        e.preventDefault();
-        navigate(loginDetail ? "/cart" : "/signup");
-    }, [loginDetail, navigate]);
+  // ── Navigation helpers ───────────────────────────────────────────
+  const guardNavigate = useCallback((path, authRequired) => (e) => {
+    e.preventDefault();
+    navigate(authRequired && !isLoggedIn ? "/signup" : path);
+  }, [navigate, isLoggedIn]);
 
-    // Debounced search — 300ms delay, cancels previous request
-    const handleSearchChange = useCallback((e) => {
-        const q = e.target.value;
-        setSearchQuery(q);
-
-        // Clear previous debounce
-        if (debounceTimer.current) clearTimeout(debounceTimer.current);
-        // Abort previous in-flight request
-        if (abortController.current) abortController.current.abort();
-
-        if (q.trim().length < 2) {
-            setSearchResults([]);
-            setShowSearch(false);
-            return;
-        }
-
-        debounceTimer.current = setTimeout(async () => {
-            abortController.current = new AbortController();
-            try {
-                const res = await fetch(`/api/products/search?q=${encodeURIComponent(q)}`, {
-                    signal: abortController.current.signal,
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    setSearchResults(data.results.slice(0, 6));
-                    setShowSearch(true);
-                }
-            } catch {
-                // Silently fail (aborted requests throw)
-            }
-        }, 300);
-    }, []);
-
-    const handleSearchSubmit = useCallback((e) => {
-        e.preventDefault();
-        if (searchQuery.trim()) {
-            setShowSearch(false);
-            navigate(`/men?search=${encodeURIComponent(searchQuery)}`);
-        }
-    }, [searchQuery, navigate]);
-
-    const handleSearchSelect = useCallback((product) => {
-        setShowSearch(false);
-        setSearchQuery("");
-        navigate(`/${product.category}/${product._id}`);
-    }, [navigate]);
-
-    const handleOpenToggle = useCallback(() => setOpen(prev => !prev), []);
-
-    return (
-        <nav className="navbar navbar-expand-lg bg-light fixed-top shadow-sm custom-navbar">
-            <div className="container-fluid">
-                <Link to="/" className="navbar-brand fw-bold">
-                    <img src={logo} alt="Westside" style={{ height: "60px", mixBlendMode: "multiply" }} />
+  return (
+    <>
+      {/* ── Global Nav ──────────────────────────────────────────── */}
+      <nav className="apple-global-nav">
+        <div className="apple-global-nav__left">
+          <button className="apple-hamburger" onClick={() => setMobileOpen((p) => !p)} aria-label="Menu">
+            <i className={`fas fa-${mobileOpen ? "times" : "bars"}`} />
+          </button>
+          <Link to="/" className="apple-global-nav__logo">
+            <i className="fab fa-apple" style={{ fontSize: 20, marginRight: 6 }} />
+            WestSide
+          </Link>
+          <ul className={`apple-global-nav__links${mobileOpen ? " apple-global-nav__links--open" : ""}`}>
+            {NAV_LINKS.map(({ to, label }) => (
+              <li key={to}>
+                <Link className="apple-global-nav__link" to={to} onClick={() => setMobileOpen(false)}>
+                  {label}
                 </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-
-                <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav mx-auto">
-                        <li className="nav-item"><Link className="nav-link" to="/women">Women</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/men">Men</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/kids">Kids</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/beauty">Beauty</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/jewellery">Fine Jewellery</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/homedecor">Home</Link></li>
-                    </ul>
-
-                    <div className="navbar-icons d-flex align-items-center gap-3">
-                        {/* Search */}
-                        <div className="position-relative">
-                            <form onSubmit={handleSearchSubmit} className="d-flex">
-                                <input
-                                    type="text"
-                                    className="form-control form-control-sm search-input"
-                                    placeholder="Search products..."
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                    onFocus={() => searchResults.length > 0 && setShowSearch(true)}
-                                    onBlur={() => setTimeout(() => setShowSearch(false), 200)}
-                                    style={{ width: "180px", borderRadius: "8px" }}
-                                />
-                                <button type="submit" className="btn btn-sm btn-outline-secondary ms-1">
-                                    <i className="fas fa-search"></i>
-                                </button>
-                            </form>
-
-                            {showSearch && searchResults.length > 0 && (
-                                <div className="position-absolute mt-1 bg-white shadow-lg rounded"
-                                    style={{ width: "300px", zIndex: 1050, right: 0, maxHeight: "400px", overflowY: "auto" }}>
-                                    {searchResults.map((p) => (
-                                        <div
-                                            key={p._id}
-                                            className="d-flex align-items-center p-2 border-bottom"
-                                            style={{ cursor: "pointer" }}
-                                            onMouseDown={() => handleSearchSelect(p)}
-                                        >
-                                            <img src={p.mainImage} alt="" loading="lazy" style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "4px" }} />
-                                            <div className="ms-2" style={{ lineHeight: 1.2 }}>
-                                                <small className="d-block fw-semibold">{p.imageName}</small>
-                                                <small className="text-success">₹{p.price}</small>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        <a href="/wishlist" className="nav-link icon-link" onClick={handleWishlistClick} title="Wishlist">
-                            <i className="far fa-heart"></i>
-                        </a>
-                        <a href="/cart" className="nav-link icon-link position-relative" onClick={handleCartClick} title="Cart">
-                            <i className="fas fa-shopping-bag"></i>
-                            {cartCount > 0 && (
-                                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                    style={{ fontSize: "10px", minWidth: "18px", height: "18px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    {cartCount}
-                                </span>
-                            )}
-                        </a>
-                        <div className="position-relative">
-                            <button className="btn btn-light ms-2" onClick={handleOpenToggle}>
-                                {loginDetail ? `Hi, ${loginDetail.name}` : "Hi, Guest"}
-                            </button>
-
-                            {open && (
-                                <div className="dropdown-menu show position-absolute end-0 mt-2 shadow">
-                                    {loginDetail ? (
-                                        <>
-                                            <Link to="/myaccount" className="dropdown-item" onClick={() => setOpen(false)}>
-                                                My Account
-                                            </Link>
-                                            <button onClick={handleLogout} className="dropdown-item">Logout</button>
-                                        </>
-                                    ) : (
-                                        <Link to="/signup" className="dropdown-item" onClick={() => setOpen(false)}>
-                                            Sign In / Login
-                                        </Link>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+        <div className="apple-global-nav__right">
+          {/* Search */}
+          <div className="apple-search">
+            <i className="fas fa-search apple-search__icon" />
+            <form onSubmit={handleSearchSubmit}>
+              <input
+                type="text"
+                className="apple-search__input"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onFocus={() => searchResults.length > 0 && setShowSearch(true)}
+                onBlur={() => setTimeout(() => setShowSearch(false), 200)}
+              />
+            </form>
+            {showSearch && searchResults.length > 0 && (
+              <div className="apple-search__results">
+                {searchResults.map((p) => (
+                  <div key={p._id} className="apple-search__result" onMouseDown={() => handleSearchSelect(p)}>
+                    <img src={p.mainImage} alt="" loading="lazy" />
+                    <div className="apple-search__result-info">
+                      <span className="apple-search__result-name">{p.imageName}</span>
+                      <span className="apple-search__result-price">₹{p.price}</span>
                     </div>
-                </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Wishlist */}
+          <a href="/wishlist" className="apple-global-nav__action"
+            onClick={guardNavigate("/wishlist", true)} title="Wishlist">
+            <i className="far fa-heart" />
+          </a>
+
+          {/* Cart */}
+          <a href="/cart" className="apple-global-nav__action"
+            onClick={guardNavigate("/cart", true)} title="Cart">
+            <i className="fas fa-shopping-bag" />
+            {cartCount > 0 && <span className="apple-global-nav__badge">{cartCount}</span>}
+          </a>
+
+          {/* User */}
+          <div className="position-relative">
+            <div className="apple-global-nav__user" onClick={() => setOpen((p) => !p)}>
+              <i className="far fa-user-circle" />
+              <span>{isLoggedIn ? login.name : "Guest"}</span>
             </div>
-        </nav>
-    );
+            {open && (
+              <div className="apple-dropdown">
+                {isLoggedIn ? (
+                  <>
+                    <Link to="/myaccount" className="apple-dropdown__item" onClick={() => setOpen(false)}>
+                      My Account
+                    </Link>
+                    <button onClick={() => { setOpen(false); logout(); }} className="apple-dropdown__item">
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link to="/signup" className="apple-dropdown__item" onClick={() => setOpen(false)}>
+                    Sign In / Login
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
+    </>
+  );
 }
 
 export default memo(Header);

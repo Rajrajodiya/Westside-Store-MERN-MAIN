@@ -70,23 +70,54 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// 404 handler
-app.use("/api/*", (req, res) => {
+// 404 handler (Express 5 compatible — wildcard syntax changed)
+app.use("/api/", (req, res) => {
   res.status(404).json({ status: "error", message: "API endpoint not found" });
 });
 
-// Global error handler
+// Global error handler — catches AppError + unexpected errors
 app.use((err, req, res, next) => {
+  // AppError — known operational failures
+  if (err.isOperational) {
+    return res.status(err.statusCode).json({
+      status: "error",
+      message: err.message,
+      ...(err.meta ? { meta: err.meta } : {}),
+    });
+  }
+  // Programming / unknown errors — log and return generic message
   console.error("Unhandled error:", err);
   res.status(500).json({ status: "error", message: "Internal server error" });
 });
 
 // ─── Vercel Serverless Export ───────────────────────────────────────
 let connected = false;
-module.exports = async (req, res) => {
+const handler = async (req, res) => {
   if (!connected) {
     try { await connectDB(); connected = true; }
     catch (err) { console.error("MongoDB connection failed:", err.message); }
   }
   return app(req, res);
 };
+
+module.exports = handler;
+
+// ─── Local Development Server ────────────────────────────────────────
+// When run directly (node api/index.js or via require.main === module)
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  (async () => {
+    try {
+      await connectDB();
+      app.listen(PORT, () => {
+        console.log(`\n⚡ WestSide Store API Server`);
+        console.log(`   🚀  http://localhost:${PORT}`);
+        console.log(`   📡  http://localhost:${PORT}/api/health`);
+        console.log(`   📦  MongoDB: Connected\n`);
+      });
+    } catch (err) {
+      console.error("❌ Failed to start server:", err.message);
+      process.exit(1);
+    }
+  })();
+}
