@@ -142,7 +142,7 @@ function Header() {
           </a>
 
           {/* User */}
-          <div className="position-relative">
+          <div className="apple-global-nav__user-wrap">
             <div className="apple-global-nav__user" onClick={() => setOpen((p) => !p)}>
               <i className="far fa-user-circle" />
               <span>{isLoggedIn ? login.name : "Guest"}</span>
