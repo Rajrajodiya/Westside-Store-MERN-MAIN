@@ -21,6 +21,7 @@ function Header() {
   const [searchResults, setSearchResults] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const debounceTimer = useRef(null);
   const abortController = useRef(null);
 
@@ -42,6 +43,7 @@ function Header() {
 
     debounceTimer.current = setTimeout(async () => {
       abortController.current = new AbortController();
+      setSearchLoading(true);
       try {
         const res = await fetch(`/api/products/search?q=${encodeURIComponent(q)}`, {
           signal: abortController.current.signal,
@@ -52,6 +54,7 @@ function Header() {
           setShowSearch(true);
         }
       } catch { /* aborted — silently ignore */ }
+      setSearchLoading(false);
     }, 300);
   }, []);
 
@@ -113,7 +116,7 @@ function Header() {
                 onBlur={() => setTimeout(() => setShowSearch(false), 200)}
               />
             </form>
-            {showSearch && searchResults.length > 0 && (
+            {showSearch && searchResults.length > 0 && !searchLoading && (
               <div className="apple-search__results">
                 {searchResults.map((p) => (
                   <div key={p._id} className="apple-search__result" onMouseDown={() => handleSearchSelect(p)}>
@@ -127,6 +130,13 @@ function Header() {
               </div>
             )}
           </div>
+
+            {/* Search loading indicator */}
+            {searchLoading && (
+              <div className="apple-search__results" style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
+                <div className="apple-spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />
+              </div>
+            )}
 
           {/* Wishlist */}
           <a href="/wishlist" className="apple-global-nav__action"

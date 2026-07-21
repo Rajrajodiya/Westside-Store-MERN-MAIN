@@ -16,7 +16,7 @@
 const respond = {
   /** 200 — Generic success */
   success(res, data = {}, statusCode = 200) {
-    const body = data?.status ? data : { status: "success", ...data };
+    const body = { ...data, status: "success" };
     return res.status(statusCode).json(body);
   },
 

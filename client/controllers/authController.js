@@ -24,7 +24,9 @@ exports.signup = asyncHandler(async (req, res) => {
   validate.password(password);
 
   const exists = await User.findOne({ email });
-  if (exists) throw AppError.conflict("User already exists. Please login.");
+  if (exists) {
+    return res.json({ status: "exists", message: "User already exists. Please login." });
+  }
 
   const userCount = await User.countDocuments();
   await User.create({ name, email, phone, password, isAdmin: userCount === 0 });
@@ -41,10 +43,14 @@ exports.login = asyncHandler(async (req, res) => {
   validate.required({ email, password }, ["email", "password"]);
 
   const user = await User.findOne({ email });
-  if (!user) throw AppError.notFound("Please signup first.");
+  if (!user) {
+    return res.json({ status: "notfound", message: "User not found. Please signup first." });
+  }
 
   const isMatch = await user.comparePassword(password);
-  if (!isMatch) throw AppError.unauthorized("Invalid email or password.");
+  if (!isMatch) {
+    return res.json({ status: "fail", message: "Invalid email or password." });
+  }
 
   const token = jwt.sign(
     { id: user._id, email: user.email, name: user.name, isAdmin: user.isAdmin },

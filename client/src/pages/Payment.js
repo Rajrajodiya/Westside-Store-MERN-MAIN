@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import SeoHelmet from "../components/SeoHelmet";
 import useAuth from "../hooks/useAuth";
 import "../assets/styles/Payment.css";
@@ -56,7 +57,7 @@ function CreditCardForm({ card, onChange }) {
           onChange={(e) => onChange({ ...card, save: e.target.checked })} />
         Save this card for future
       </label>
-      <p className="text-muted small mt-2">🔒 Secured by Stripe</p>
+      <p style={{ color: "#718096", fontSize: 12, marginTop: 8 }}>🔒 Secured by Stripe</p>
     </div>
   );
 }
@@ -71,7 +72,7 @@ function OrderSummary({ totals, cart }) {
       <div className="summary-row"><span>Bag Discount:</span><span>-₹{totals.discount}</span></div>
       <div className="summary-row"><span>Shipping:</span><span>₹{totals.shipping}</span></div>
       <div className="summary-row grand"><span>Grand Total:</span><span>₹{totals.grandTotal}</span></div>
-      <h3 className="mt-4">Products</h3>
+      <h3 style={{ marginTop: 24 }}>Products</h3>
       <div className="payment-products">
         {cart.map((prod) => (
           <div key={prod._id} className="payment-product-item">
@@ -96,8 +97,8 @@ function ThankYou({ orderNumber, onClose }) {
         <p>Thank you for choosing WestSide Store!<br />A confirmation email has been sent.</p>
         <div className="delivery-info">📦 Your order will be delivered within 5-7 business days</div>
         <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <a href="/" className="btn btn-primary">Continue Shopping</a>
-          <a href="/myaccount" className="btn btn-secondary">Track Your Order</a>
+          <Link to="/" className="pay-btn" style={{ padding: "12px 24px", fontSize: 14 }}>Continue Shopping</Link>
+          <Link to="/myaccount" className="pay-btn" style={{ padding: "12px 24px", fontSize: 14, background: "linear-gradient(135deg, #718096 0%, #4a5568 100%)" }}>Track Your Order</Link>
         </div>
       </div>
     </div>
@@ -224,9 +225,9 @@ export default function Payment() {
         <div className="payment-container">
           <div className="payment-left">
             <form className="payment-form" onSubmit={handlePay}>
-              <h2 className="mb-4">💳 Payment Details</h2>
+              <h2 style={{ marginBottom: 24 }}>💳 Payment Details</h2>
 
-              <div className="payment-methods mb-3">
+              <div className="payment-methods" style={{ marginBottom: 16 }}>
                 {PAYMENT_METHODS.map(({ id, label }) => (
                   <label key={id} className={method === id ? "active" : ""}>
                     <input type="radio" name="method" value={id}
@@ -238,7 +239,7 @@ export default function Payment() {
 
               {paymentForm}
 
-              <div className="shipping-details mt-3">
+              <div className="shipping-details" style={{ marginTop: 16 }}>
                 <label>Name Of Receiver
                   <input type="text" required value={receiver}
                     onChange={(e) => setReceiver(e.target.value)} placeholder="Name Of Receiver" />
@@ -248,8 +249,8 @@ export default function Payment() {
                 </p>
               </div>
 
-              {error && <div className="alert alert-danger mt-2">{error}</div>}
-              <button type="submit" className="pay-btn mt-3" disabled={isProcessing}>
+              {error && <div style={{ marginTop: 8, fontSize: "var(--text-caption)", color: "#dc2626", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "var(--radius-sm)", padding: "10px 14px", textAlign: "center" }}>{error}</div>}
+              <button type="submit" className="pay-btn" style={{ marginTop: 16 }} disabled={isProcessing}>
                 {isProcessing ? "Processing..." : `PAY ₹${totals.grandTotal}`}
               </button>
             </form>

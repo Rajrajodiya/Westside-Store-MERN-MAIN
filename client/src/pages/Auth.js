@@ -54,8 +54,8 @@ function Auth() {
     setLoading(true);
     try {
       const { data } = await axios.post("/api/auth/login", { email: form.email, password: form.password });
-      if (data.status === "notfound") { setError("Please signup first."); setLoading(false); return; }
-      if (data.status !== "success") { setError("Invalid credentials."); setLoading(false); return; }
+      if (data.status === "notfound") { setError(data.message || "User not found. Please signup first."); setLoading(false); return; }
+      if (data.status !== "success") { setError(data.message || "Invalid email or password."); setLoading(false); return; }
       localStorage.setItem("login_detail", JSON.stringify({ token: data.token, name: data.user.name, email: data.user.email }));
       showSuccess("Welcome back!");
       setTimeout(() => { navigate("/"); window.location.reload(); }, 300);
@@ -71,8 +71,8 @@ function Auth() {
     setLoading(true);
     try {
       const { data } = await axios.post("/api/auth/signup", form);
-      if (data.status === "exists") { setError("User already exists. Please login."); setLoading(false); return; }
-      if (data.status !== "success") { setError("Signup failed."); setLoading(false); return; }
+      if (data.status === "exists") { setError(data.message || "User already exists. Please login."); setLoading(false); return; }
+      if (data.status !== "success") { setError(data.message || "Signup failed."); setLoading(false); return; }
       showSuccess("Registered Successfully! Please login.");
       setIsLogin(true); setForm(INITIAL_FORM); setError("");
     } catch { setError("Server error. Try again."); showError("Server error."); }

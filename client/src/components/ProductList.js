@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import LoadingSpinner from "./LoadingSpinner";
 import SeoHelmet from "./SeoHelmet";
@@ -15,11 +15,24 @@ export default function ProductList() {
     const [priceFilter, setPriceFilter] = useState([0, 10000]);
     const [sortOrder, setSortOrder] = useState("asc");
 
+    // Responsive grid columns — clamps to 2 on mobile, 3 on tablet
+    const [winWidth, setWinWidth] = useState(window.innerWidth);
+    useEffect(() => {
+      const onResize = () => setWinWidth(window.innerWidth);
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
+    }, []);
+    const effectiveCols = useMemo(() => {
+      if (winWidth < 640) return Math.min(gridCols, 2);
+      if (winWidth < 1024) return Math.min(gridCols, 3);
+      return gridCols;
+    }, [gridCols, winWidth]);
+
     useEffect(() => {
         setLoading(true);
         const fetchFn = searchQuery
             ? axios.get(`/api/products/search?q=${encodeURIComponent(searchQuery)}`).then(r => setProducts(r.data.results || []))
-            : axios.get(`/api/products/${category}`).then(r => setProducts(r.data));
+            : axios.get(`/api/products/${category}`).then(r => setProducts(r.data.results || []));
         fetchFn.catch(console.error).finally(() => setLoading(false));
     }, [category, searchQuery]);
 
@@ -44,7 +57,12 @@ export default function ProductList() {
                         <div className="control-group">
                             <span>Grid:</span>
                             {[2, 3, 4].map(n => (
-                                <button key={n} className={gridCols === n ? "grid-btn active" : "grid-btn"} onClick={() => setGridCols(n)}>{n}</button>
+                                <button
+                                  key={n}
+                                  className={gridCols === n ? "grid-btn active" : "grid-btn"}
+                                  onClick={() => setGridCols(n)}
+                                  data-responsive={n > 2 ? "hidden-mobile" : ""}
+                                >{n}</button>
                             ))}
                         </div>
                         <div className="control-group">
@@ -64,7 +82,7 @@ export default function ProductList() {
                     {filteredProducts.length === 0 ? (
                         <div className="text-center py-5"><p className="text-muted">No products found.</p></div>
                     ) : (
-                        <div className="grid" style={{ gridTemplateColumns: `repeat(${gridCols}, 1fr)` }}>
+                        <div className="grid" style={{ gridTemplateColumns: `repeat(${effectiveCols}, 1fr)` }}>
                             {filteredProducts.map(p => (
                                 <Link key={p._id} to={`/${p.category}/${p._id}`} className="card">
                                     <img src={p.mainImage} alt={p.imageName} loading="lazy" />

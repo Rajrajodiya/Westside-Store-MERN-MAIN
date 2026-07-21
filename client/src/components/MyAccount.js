@@ -21,7 +21,7 @@ const MyAccount = () => {
                         headers: { ...(loginData?.token ? { Authorization: `Bearer ${loginData.token}` } : {}) },
                     });
                     const result = await response.json();
-                    if (result.status === "success") setOrders(result.orders);
+                    if (result.status === "success") setOrders(result.results || []);
                     else setError("Failed to load orders");
                 } catch { setError("Failed to connect to server"); }
             }

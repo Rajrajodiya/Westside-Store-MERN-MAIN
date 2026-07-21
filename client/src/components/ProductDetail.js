@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { showSuccess, showInfo } from "./ToastConfig";
 import useAuth from "../hooks/useAuth";
 import LoadingSpinner from "./LoadingSpinner";
+import ErrorState from "./ErrorState";
 import SeoHelmet from "./SeoHelmet";
 import "../assets/styles/ProductDetail.css";
 
@@ -119,7 +120,9 @@ export default function ProductDetail() {
   }, [userKey, prod, navigate]);
 
   // Early returns for edge cases
-  if (error) return <LoadingSpinner text={error} fullPage />;
+  if (error) {
+    return <ErrorState message={error} onRetry={() => window.location.reload()} />;
+  }
   if (!prod) return <LoadingSpinner text="Loading product details..." fullPage />;
 
   const allImages = [prod.mainImage, ...(prod.otherImages || [])]
