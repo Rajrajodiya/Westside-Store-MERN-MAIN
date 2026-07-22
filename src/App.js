@@ -43,8 +43,8 @@ function App() {
           <Route path="/contact" element={<LazyRoute element={<Contact />} />} />
           <Route path="/cart" element={<PrivateRoute><LazyRoute element={<Cart />} /></PrivateRoute>} />
           <Route path="/wishlist" element={<PrivateRoute><LazyRoute element={<Wishlist />} /></PrivateRoute>} />
-          <Route path="/:category" element={<LazyRoute element={<ProductList />} />} />
-          <Route path="/:category/:id" element={<LazyRoute element={<ProductDetail />} />} />
+          <Route path="/products/:category" element={<LazyRoute element={<ProductList />} />} />
+          <Route path="/products/:category/:id" element={<LazyRoute element={<ProductDetail />} />} />
           <Route path="/payment" element={<LazyRoute element={<Payment />} />} />
           <Route path="/myaccount" element={<PrivateRoute><LazyRoute element={<MyAccount />} /></PrivateRoute>} />
           <Route path="/reset-password" element={<LazyRoute element={<ResetPassword />} />} />

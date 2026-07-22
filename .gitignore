@@ -1,9 +1,8 @@
 node_modules/
+# Generated Tailwind CSS
+src/styles/tailwind.css
+build/
 .env
 .env.local
-.vercel
-client/build/
-client/node_modules/
-client/.env
-client/uploads/*
-!client/uploads/.gitkeep
+uploads/*
+uploads/.gitkeep

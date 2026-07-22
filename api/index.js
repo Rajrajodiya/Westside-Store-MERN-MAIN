@@ -1,2 +1,145 @@
-// Thin proxy for Vercel — delegates to the actual Express app inside client/
-module.exports = require("../client/api/index.js");
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
+require("dotenv").config({ path: path.join(__dirname, "..", "..", ".env") });
+
+const connectDB = require("./config/db");
+
+const authRoutes = require("../routes/auth");
+const productRoutes = require("../routes/products");
+const orderRoutes = require("../routes/orders");
+const contactRoutes = require("../routes/contact");
+const paymentRoutes = require("../routes/payment");
+const uploadRoutes = require("../routes/upload");
+const adminRoutes = require("../routes/admin");
+const { authMiddleware } = require("../middleware/auth");
+const { generalLimiter, authLimiter, contactLimiter, orderLimiter } = require("../middleware/security");
+const { sanitize } = require("express-mongo-sanitize");
+
+const app = express();
+
+// Trust proxy (required when behind a load balancer / Vercel)
+app.set("trust proxy", 1);
+
+// ─── Security & Headers ─────────────────────────────────────────────
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
+app.use(generalLimiter);
+
+// ─── Stripe webhook MUST use raw body BEFORE express.json() ─────────
+app.use("/api/payment", (req, res, next) => {
+  if (req.path === "/webhook") {
+    express.raw({ type: "application/json" })(req, res, next);
+  } else {
+    express.json()(req, res, next);
+  }
+});
+app.use("/api/payment", paymentRoutes);
+
+// ─── Body Parsing (all other routes) ───────────────────────────────
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// ─── Input Sanitizers ───────────────────────────────────────────────
+// NOTE: Express 5 uses a getter-only `req.query` property, so we cannot
+// assign to it directly (express-mongo-sanitize v2.x breaks). Instead,
+// we sanitize each request property in place via a custom handler.
+app.use((req, res, next) => {
+  if (req.body) { try { req.body = sanitize(req.body); } catch { } }
+  if (req.params) { try { req.params = sanitize(req.params); } catch { } }
+  if (req.query) {
+    // req.query is a getter in Express 5 — mutate the returned object
+    try {
+      const sanitized = sanitize({ ...req.query });
+      Object.keys(req.query).forEach((k) => delete req.query[k]);
+      Object.keys(sanitized).forEach((k) => { req.query[k] = sanitized[k]; });
+    } catch { }
+  }
+  next();
+});
+// NOTE: xss-clean removed intentionally — Express 5 makes req.query a getter-only
+// property, which breaks libraries that reassign it. React's JSX escaping already
+// handles XSS protection on the frontend, and our custom sanitize middleware above
+// handles NoSQL injection prevention on the backend.
+
+// ─── Logging ────────────────────────────────────────────────────────
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
+// ─── API Routes ─────────────────────────────────────────────────────
+app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/contact", contactLimiter, contactRoutes);
+app.use("/api/orders", orderLimiter, orderRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/admin", adminRoutes);
+
+// Protected auth route
+app.get("/api/auth/me", authMiddleware, async (req, res) => {
+  try {
+    const User = require("../models/User");
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ status: "error", message: "User not found" });
+    res.json({ status: "success", user: user.toJSON() });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: "Server error" });
+  }
+});
+
+// Health check
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// 404 handler (Express 5 compatible — wildcard syntax changed)
+app.use("/api/", (req, res) => {
+  res.status(404).json({ status: "error", message: "API endpoint not found" });
+});
+
+// Global error handler — catches AppError + unexpected errors
+app.use((err, req, res, next) => {
+  console.error("❌ Unhandled error:", err);
+  // AppError — known operational failures
+  if (err.isOperational) {
+    return res.status(err.statusCode).json({
+      status: "error",
+      message: err.message,
+      ...(err.meta ? { meta: err.meta } : {}),
+    });
+  }
+  // Programming / unknown errors — log and return generic message
+  res.status(500).json({ status: "error", message: "Internal server error" });
+});
+
+// ─── Vercel Serverless Export ───────────────────────────────────────
+let connected = false;
+const handler = async (req, res) => {
+  if (!connected) {
+    try { await connectDB(); connected = true; }
+    catch (err) { console.error("MongoDB connection failed:", err.message); }
+  }
+  return app(req, res);
+};
+
+module.exports = handler;
+
+// ─── Local Development Server ────────────────────────────────────────
+// When run directly (node api/index.js or via require.main === module)
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  (async () => {
+    try {
+      await connectDB();
+      app.listen(PORT, () => {
+        console.log(`\n⚡ WestSide Store API Server`);
+        console.log(`   🚀  http://localhost:${PORT}`);
+        console.log(`   📡  http://localhost:${PORT}/api/health`);
+        console.log(`   📦  MongoDB: Connected\n`);
+      });
+    } catch (err) {
+      console.error("❌ Failed to start server:", err.message);
+      process.exit(1);
+    }
+  })();
+}

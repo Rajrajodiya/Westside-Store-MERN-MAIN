@@ -84,7 +84,7 @@ export default function ProductList() {
                     ) : (
                         <div className="grid" style={{ gridTemplateColumns: `repeat(${effectiveCols}, 1fr)` }}>
                             {filteredProducts.map(p => (
-                                <Link key={p._id} to={`/${p.category}/${p._id}`} className="card">
+                                <Link key={p._id} to={`/products/${p.category}/${p._id}`} className="card">
                                     <img src={p.mainImage} alt={p.imageName} loading="lazy" />
                                     <div className="card-content">
                                         <h3>{p.imageName}</h3>

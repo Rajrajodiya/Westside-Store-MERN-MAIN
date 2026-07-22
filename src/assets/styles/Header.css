@@ -40,8 +40,33 @@
 }
 .apple-global-nav__logo:hover { opacity: 1; color: #fff; }
 
-.apple-global-nav__links {
+.apple-global-nav__desktop-nav {
   display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.apple-global-nav__desktop-nav .apple-nav-link {
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+  padding: 0 12px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  border-radius: 0;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.apple-global-nav__desktop-nav .apple-nav-link:hover {
+  color: #fff;
+  background: none;
+}
+
+.apple-global-nav__links {
+  display: none;
   align-items: center;
   gap: 24px;
   list-style: none;
@@ -104,24 +129,7 @@
   line-height: 1;
 }
 
-.apple-global-nav__user {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: rgba(255,255,255,0.85);
-  cursor: pointer;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-.apple-global-nav__user:hover {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-}
 
-.apple-global-nav__user-wrap { position: relative; }
 
 /* ── Hamburger ──────────────────────────────────────────────────── */
 .apple-hamburger {
@@ -139,35 +147,7 @@
 }
 .apple-hamburger:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-/* ── Dropdown Menu ──────────────────────────────────────────────── */
-.apple-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
-  min-width: 180px;
-  padding: 6px 0;
-  z-index: 1050;
-  overflow: hidden;
-}
 
-.apple-dropdown__item {
-  display: block;
-  width: 100%;
-  padding: 10px 20px;
-  color: #333;
-  text-decoration: none;
-  font-size: 14px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
-  transition: background 0.15s;
-}
-.apple-dropdown__item:hover { background: #f5f5f7; color: #1d1d1f; }
 
 /* ── Search ──────────────────────────────────────────────────────── */
 .apple-search { position: relative; }
@@ -259,6 +239,7 @@
 
 /* ── Responsive: Tablet ──────────────────────────────────────────── */
 @media (max-width: 834px) {
+  .apple-global-nav__desktop-nav { display: none; }
   .apple-global-nav__links { display: none; }
 
   .apple-global-nav__links--open {
