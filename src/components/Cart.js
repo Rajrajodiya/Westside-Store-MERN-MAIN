@@ -21,11 +21,11 @@ const saveCart = (key, cart) => localStorage.setItem(`cart_${key}`, JSON.stringi
 export function CartItemRow({ prod, onQuantity, onDelete, showQty = true }) {
   return (
     <div className="cart-item">
-      <Link to={`/${prod.category}/${prod._id}`}>
+      <Link to={`/products/${prod.category}/${prod._id}`}>
         <img src={prod.mainImage} alt={prod.imageName} loading="lazy" className="cart-img" />
       </Link>
       <div className="cart-details">
-        <Link to={`/${prod.category}/${prod._id}`} className="cart-name-link">
+        <Link to={`/products/${prod.category}/${prod._id}`} className="cart-name-link">
           <p className="cart-name">{prod.imageName}</p>
         </Link>
         <p className="cart-price">₹{prod.price}</p>

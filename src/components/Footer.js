@@ -2,11 +2,11 @@ import "../assets/styles/Footer.css";
 
 const FOOTER_LINKS = {
   Shop: [
-    { to: "/women", label: "Women" },
-    { to: "/men", label: "Men" },
-    { to: "/kids", label: "Kids" },
-    { to: "/beauty", label: "Beauty" },
-    { to: "/homedecor", label: "Home" },
+    { to: "/products/women", label: "Women" },
+    { to: "/products/men", label: "Men" },
+    { to: "/products/kids", label: "Kids" },
+    { to: "/products/beauty", label: "Beauty" },
+    { to: "/products/homedecor", label: "Home" },
   ],
   Connect: [
     { to: "/about", label: "About Us" },

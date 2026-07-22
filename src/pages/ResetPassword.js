@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { showSuccess, showError } from "../components/ToastConfig";
+import { Button } from "../components/ui/button";
+import { Alert } from "../components/ui/alert";
 import SeoHelmet from "../components/SeoHelmet";
 
 function ResetPassword() {
@@ -48,28 +50,67 @@ function ResetPassword() {
   return (
     <>
       <SeoHelmet title="Reset Password" description="Reset your WestSide Store account password." />
-      <div className="container d-flex align-items-center justify-content-center" style={{ minHeight: "70vh", paddingTop: "90px" }}>
-        <div className="card p-4 shadow-sm" style={{ maxWidth: "450px", width: "100%" }}>
-          <div className="text-center mb-4">
-            <h3 className="fw-bold">{step === "forgot" ? "Forgot Password" : "Reset Password"}</h3>
-            <p className="text-muted">{step === "forgot" ? "Enter your email and we'll send you a reset link." : "Enter your new password."}</p>
+      <div className="flex items-center justify-center" style={{ minHeight: "70vh", paddingTop: "90px" }}>
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8" style={{ maxWidth: "450px", width: "100%" }}>
+          <div className="text-center mb-6">
+            <h3 className="text-xl font-bold text-gray-900">{step === "forgot" ? "Forgot Password" : "Reset Password"}</h3>
+            <p className="text-gray-500 mt-2">{step === "forgot" ? "Enter your email and we'll send you a reset link." : "Enter your new password."}</p>
           </div>
           {step === "forgot" && (
-            <form onSubmit={handleForgotPassword}>
-              <div className="mb-3"><label className="form-label">Email Address</label><input type="email" className="form-control" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@example.com" /></div>
-              {message && <div className="alert alert-success">{message}</div>}
-              {error && <div className="alert alert-danger">{error}</div>}
-              <button type="submit" className="btn btn-primary w-100" disabled={loading}>{loading ? "Sending..." : "Send Reset Link"}</button>
-              <div className="text-center mt-3"><Link to="/signup" className="text-decoration-none">Back to Login</Link></div>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  className="apple-input"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                  placeholder="you@example.com"
+                />
+              </div>
+              {message && <Alert variant="success">{message}</Alert>}
+              {error && <Alert variant="error">{error}</Alert>}
+              <Button type="submit" variant="primary" size="md" className="w-full" disabled={loading}>
+                {loading ? "Sending..." : "Send Reset Link"}
+              </Button>
+              <div className="text-center mt-4">
+                <Link to="/signup" className="text-sm text-blue-600 hover:text-blue-700 hover:underline">
+                  Back to Login
+                </Link>
+              </div>
             </form>
           )}
           {step === "reset" && (
-            <form onSubmit={handleResetPassword}>
-              <div className="mb-3"><label className="form-label">New Password</label><input type="password" className="form-control" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} placeholder="At least 6 characters" /></div>
-              <div className="mb-3"><label className="form-label">Confirm Password</label><input type="password" className="form-control" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required placeholder="Repeat your password" /></div>
-              {message && <div className="alert alert-success">{message}</div>}
-              {error && <div className="alert alert-danger">{error}</div>}
-              <button type="submit" className="btn btn-primary w-100" disabled={loading}>{loading ? "Resetting..." : "Reset Password"}</button>
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <input
+                  type="password"
+                  className="apple-input"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  placeholder="At least 6 characters"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                <input
+                  type="password"
+                  className="apple-input"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  required
+                  placeholder="Repeat your password"
+                />
+              </div>
+              {message && <Alert variant="success">{message}</Alert>}
+              {error && <Alert variant="error">{error}</Alert>}
+              <Button type="submit" variant="primary" size="md" className="w-full" disabled={loading}>
+                {loading ? "Resetting..." : "Reset Password"}
+              </Button>
             </form>
           )}
         </div>

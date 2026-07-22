@@ -1,3 +1,11 @@
-@tailwind base;
+/* ═══════════════════════════════════════════════════════════════════
+   Tailwind CSS — Utilities & Components Only
+   ═══════════════════════════════════════════════════════════════════
+   NOTE: We intentionally DO NOT use @tailwind base here because the
+   project already has a complete CSS reset in index.css with
+   custom properties. Tailwind's Preflight would conflict with the
+   existing design system (body fonts, margins, etc.).
+   ═══════════════════════════════════════════════════════════════════ */
+
 @tailwind components;
 @tailwind utilities;

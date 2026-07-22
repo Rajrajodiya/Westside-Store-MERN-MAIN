@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { showSuccess, showError } from "./ToastConfig";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import LoadingSpinner from "./LoadingSpinner";
 import SeoHelmet from "./SeoHelmet";
 import "../assets/styles/MyAccount.css";
@@ -31,7 +33,16 @@ const MyAccount = () => {
     }, []);
 
     const formatDate = (d) => new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
-    const getStatusColor = (s) => ({ delivered: "#28a745", processing: "#ffc107", shipped: "#17a2b8", cancelled: "#dc3545" }[s.toLowerCase()] || "#6c757d");
+    const getStatusBadge = (s) => {
+        const status = s.toLowerCase();
+        const variants = {
+            delivered: "success",
+            processing: "warning",
+            shipped: "info",
+            cancelled: "danger",
+        };
+        return variants[status] || "default";
+    };
 
     const handleDownloadInvoice = async (orderNumber) => {
         try {
@@ -77,10 +88,16 @@ const MyAccount = () => {
                         <button className="view-details-btn">View Details</button>
                     </div>
                     <ul className="menu-list">
-                        <li className="nav-item active"><Link className="nav-link" to="/myaccount">🛒 My Orders</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/wishlist">❤️ My Wishlist</Link></li>
-                        <hr />
-                        <li className="nav-item"><Link className="nav-link" to="/contact">📞 Contact Us</Link></li>
+                        <li className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-medium transition-colors">
+                            <Link className="text-blue-700 no-underline" to="/myaccount">🛒 My Orders</Link>
+                        </li>
+                        <li className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">
+                            <Link className="text-gray-600 no-underline hover:text-gray-800" to="/wishlist">❤️ My Wishlist</Link>
+                        </li>
+                        <hr className="border-gray-200 my-2" />
+                        <li className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">
+                            <Link className="text-gray-600 no-underline hover:text-gray-800" to="/contact">📞 Contact Us</Link>
+                        </li>
                     </ul>
                 </aside>
                 <main className="orders-section">
@@ -98,7 +115,7 @@ const MyAccount = () => {
                                             <p className="order-total">Total: ₹{order.totalAmount}</p>
                                         </div>
                                         <div className="order-status">
-                                            <span className="status-badge" style={{ backgroundColor: getStatusColor(order.status) }}>{order.status}</span>
+                                            <Badge variant={getStatusBadge(order.status)}>{order.status}</Badge>
                                             <p className="payment-method">via {order.paymentMethod}</p>
                                         </div>
                                     </div>
@@ -123,8 +140,14 @@ const MyAccount = () => {
                                             <p className="receiver-info">Receiver: {order.receiverName}</p>
                                         </div>
                                         <div className="action-buttons">
-                                            <button className="btn-secondary" onClick={() => handleDownloadInvoice(order.orderNumber)}>📄 Download Invoice</button>
-                                            {order.status === 'Processing' && <button className="btn-danger" onClick={() => handleCancelOrder(order.orderNumber)}>Cancel Order</button>}
+                                            <Button variant="outline" size="sm" onClick={() => handleDownloadInvoice(order.orderNumber)}>
+                                                📄 Download Invoice
+                                            </Button>
+                                            {order.status === 'Processing' && (
+                                                <Button variant="danger" size="sm" onClick={() => handleCancelOrder(order.orderNumber)}>
+                                                    Cancel Order
+                                                </Button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -135,7 +158,9 @@ const MyAccount = () => {
                             <div className="empty-icon">📦</div>
                             <h4>No orders yet!</h4>
                             <p>Looks like you haven't placed any orders yet.</p>
-                            <Link to="/" className="btn-primary">Start Shopping</Link>
+                            <Link to="/">
+                                <Button variant="primary" size="md">Start Shopping</Button>
+                            </Link>
                         </div>
                     )}
                 </main>

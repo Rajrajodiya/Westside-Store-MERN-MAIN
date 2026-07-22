@@ -80,7 +80,9 @@ export default function ProductList() {
                         </div>
                     </div>
                     {filteredProducts.length === 0 ? (
-                        <div className="text-center py-5"><p className="text-muted">No products found.</p></div>
+                        <div className="flex items-center justify-center py-12">
+                            <p className="text-gray-400 text-base">No products found.</p>
+                        </div>
                     ) : (
                         <div className="grid" style={{ gridTemplateColumns: `repeat(${effectiveCols}, 1fr)` }}>
                             {filteredProducts.map(p => (
