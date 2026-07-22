@@ -4,6 +4,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { toasterOptions } from "./components/ToastConfig";
 import Layout from "./components/Layout.js";
 import LoadingSpinner from "./components/LoadingSpinner.js";
+import useAuth from "./hooks/useAuth";
 
 // Lazy-loaded route components for code splitting
 const Cart = lazy(() => import("./components/Cart.js"));
@@ -27,7 +28,7 @@ const LazyRoute = ({ element }) => (
 );
 
 function PrivateRoute({ children }) {
-  const isLoggedIn = !!localStorage.getItem("login_detail");
+  const { isLoggedIn } = useAuth();
   return isLoggedIn ? children : <LazyRoute element={<Auth />} />;
 }
 

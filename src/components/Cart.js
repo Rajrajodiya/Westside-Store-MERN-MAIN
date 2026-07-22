@@ -2,19 +2,8 @@ import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import SeoHelmet from "./SeoHelmet";
+import { getCart, saveCart } from "../lib/storage";
 import "../assets/styles/cart.css";
-
-// ── localStorage helpers (normalization at boundary) ──────────────
-const getCart = (key) => {
-  try {
-    const raw = localStorage.getItem(`cart_${key}`);
-    return (raw ? JSON.parse(raw) : []).map((p) => ({ ...p, quantity: p.quantity || 1 }));
-  } catch {
-    return [];
-  }
-};
-
-const saveCart = (key, cart) => localStorage.setItem(`cart_${key}`, JSON.stringify(cart));
 
 // ── Shared cart-item row (DRY — used by Cart + Wishlist) ─────────
 
@@ -45,7 +34,7 @@ export function CartItemRow({ prod, onQuantity, onDelete, showQty = true }) {
 // ── Cart Component ───────────────────────────────────────────────
 
 export default function Cart() {
-  const { login, userKey, isLoggedIn } = useAuth();
+  const { userKey, isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const [cart, setCart] = useState(() => getCart(userKey));
 

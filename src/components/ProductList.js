@@ -18,14 +18,14 @@ export default function ProductList() {
     // Responsive grid columns — clamps to 2 on mobile, 3 on tablet
     const [winWidth, setWinWidth] = useState(window.innerWidth);
     useEffect(() => {
-      const onResize = () => setWinWidth(window.innerWidth);
-      window.addEventListener('resize', onResize);
-      return () => window.removeEventListener('resize', onResize);
+        const onResize = () => setWinWidth(window.innerWidth);
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
     }, []);
     const effectiveCols = useMemo(() => {
-      if (winWidth < 640) return Math.min(gridCols, 2);
-      if (winWidth < 1024) return Math.min(gridCols, 3);
-      return gridCols;
+        if (winWidth < 640) return Math.min(gridCols, 2);
+        if (winWidth < 1024) return Math.min(gridCols, 3);
+        return gridCols;
     }, [gridCols, winWidth]);
 
     useEffect(() => {
@@ -58,10 +58,10 @@ export default function ProductList() {
                             <span>Grid:</span>
                             {[2, 3, 4].map(n => (
                                 <button
-                                  key={n}
-                                  className={gridCols === n ? "grid-btn active" : "grid-btn"}
-                                  onClick={() => setGridCols(n)}
-                                  data-responsive={n > 2 ? "hidden-mobile" : ""}
+                                    key={n}
+                                    className={gridCols === n ? "grid-btn active" : "grid-btn"}
+                                    onClick={() => setGridCols(n)}
+                                    data-responsive={n > 2 ? "hidden-mobile" : ""}
                                 >{n}</button>
                             ))}
                         </div>

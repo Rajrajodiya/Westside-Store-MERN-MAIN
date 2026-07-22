@@ -6,28 +6,18 @@ import useAuth from "../hooks/useAuth";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorState from "./ErrorState";
 import SeoHelmet from "./SeoHelmet";
+import { getCart, saveCart, getWishlist, saveWishlist } from "../lib/storage";
 import "../assets/styles/ProductDetail.css";
 
 // ── Constants (data-driven, DRY) ──────────────────────────────────
 const SIZES = ["S", "M", "L", "XL"];
 const DELIVERY_MSG = "Product will be delivered within 3 to 4 days.";
 
-// ── localStorage helpers (normalization at boundary) ──────────────
-const getList = (key) => {
-  try { return JSON.parse(localStorage.getItem(key)) || []; }
-  catch { return []; }
-};
-
-const saveList = (key, items) =>
-  localStorage.setItem(key, JSON.stringify(items));
-
-const toggleItem = (key, item) => {
-  const list = getList(key);
+// ── Toggle helper (normalization at boundary) ─────────────────────
+const toggleItem = (list, item) => {
   const exists = list.find((p) => p._id === item._id);
-  if (exists) return false;
-  list.push(item);
-  saveList(key, list);
-  return true;
+  if (exists) return null;
+  return [...list, item];
 };
 
 // ── Child: Image Gallery ─────────────────────────────────────────
@@ -102,9 +92,10 @@ export default function ProductDetail() {
   }, []);
 
   const handleAddToCart = useCallback(() => {
-    const key = `cart_${userKey}`;
-    const added = toggleItem(key, prod);
-    if (added) {
+    const cart = getCart(userKey);
+    const updated = toggleItem(cart, prod);
+    if (updated) {
+      saveCart(userKey, updated);
       window.dispatchEvent(new Event("cartUpdated"));
       showSuccess("Added to cart!");
     } else showInfo("Already in your cart.");
@@ -112,10 +103,12 @@ export default function ProductDetail() {
   }, [userKey, prod, navigate]);
 
   const handleWishlist = useCallback(() => {
-    const key = `wishlist_${userKey}`;
-    const added = toggleItem(key, prod);
-    if (added) showSuccess("Added to wishlist!");
-    else showInfo("Already in your wishlist.");
+    const wishlist = getWishlist(userKey);
+    const updated = toggleItem(wishlist, prod);
+    if (updated) {
+      saveWishlist(userKey, updated);
+      showSuccess("Added to wishlist!");
+    } else showInfo("Already in your wishlist.");
     navigate("/wishlist");
   }, [userKey, prod, navigate]);
 

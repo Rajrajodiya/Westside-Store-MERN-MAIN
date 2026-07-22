@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import SeoHelmet from "../components/SeoHelmet";
 import useAuth from "../hooks/useAuth";
+import { getCart } from "../lib/storage";
 import "../assets/styles/Payment.css";
 
 // ── Data-driven payment methods (declarative, DRY) ────────────────
@@ -127,10 +128,7 @@ export default function Payment() {
   const [orderNumber, setOrderNumber] = useState("");
 
   // Read cart (lazy initializer)
-  const [cart] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(`cart_${userKey}`)) || []; }
-    catch { return []; }
-  });
+  const [cart] = useState(() => getCart(userKey));
 
   const totals = useMemo(() => computeCartTotals(cart), [cart]);
 

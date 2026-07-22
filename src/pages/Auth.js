@@ -3,39 +3,41 @@ import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { showSuccess, showError } from "../components/ToastConfig";
 import SeoHelmet from "../components/SeoHelmet";
+import useAuth from "../hooks/useAuth";
 import "../assets/styles/auth.css";
 
 const LOGIN_FIELDS = [
-  { name: "email", label: "Email", type: "email", placeholder: "you@example.com" },
+  { name: "emailOrPhone", label: "Email or Phone", type: "text", placeholder: "you@example.com or 9876543210" },
   { name: "password", label: "Password", type: "password", placeholder: "Enter your password" },
 ];
 const REGISTER_FIELDS = [
   { name: "name", label: "Full Name", type: "text", placeholder: "John Doe" },
-  { name: "email", label: "Email", type: "email", placeholder: "you@example.com" },
+  { name: "emailOrPhone", label: "Email or Phone", type: "text", placeholder: "you@example.com or 9876543210" },
   { name: "phone", label: "Phone", type: "tel", placeholder: "9876543210" },
   { name: "password", label: "Password", type: "password", placeholder: "At least 6 characters" },
 ];
-const INITIAL_FORM = { name: "", email: "", phone: "", password: "" };
+const INITIAL_FORM = { name: "", emailOrPhone: "", phone: "", password: "" };
 const EMAIL_RE = /\S+@\S+\.\S+/;
 const PHONE_RE = /^\d{10}$/;
 const PASSWORD_MIN = 6;
 
-const validateLogin = ({ email, password }) => {
-  if (!email || !password) return "All fields required.";
-  if (!EMAIL_RE.test(email)) return "Enter a valid email.";
+const validateLogin = ({ emailOrPhone, password }) => {
+  if (!emailOrPhone || !password) return "All fields required.";
   return null;
 };
 
-const validateRegister = ({ name, email, phone, password }) => {
-  if (!name || !email || !phone || !password) return "All fields required.";
-  if (!EMAIL_RE.test(email)) return "Enter a valid email.";
+const validateRegister = ({ name, emailOrPhone, phone, password }) => {
+  if (!name || !emailOrPhone || !phone || !password) return "All fields required.";
+  if (!EMAIL_RE.test(emailOrPhone) && !PHONE_RE.test(emailOrPhone))
+    return "Enter a valid email or 10-digit phone.";
   if (!PHONE_RE.test(phone)) return "Phone must be 10 digits.";
-  if (password.length < PASSWORD_MIN) return "Password must be at least " + PASSWORD_MIN + " characters.";
+  if (password.length < PASSWORD_MIN) return `Password must be at least ${PASSWORD_MIN} characters.`;
   return null;
 };
 
 function Auth() {
   const navigate = useNavigate();
+  const { persistLogin } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [form, setForm] = useState(INITIAL_FORM);
   const [error, setError] = useState("");
@@ -53,15 +55,15 @@ function Auth() {
     if (verr) return setError(verr);
     setLoading(true);
     try {
-      const { data } = await axios.post("/api/auth/login", { email: form.email, password: form.password });
+      const { data } = await axios.post("/api/auth/login", { emailOrPhone: form.emailOrPhone, password: form.password });
       if (data.status === "notfound") { setError(data.message || "User not found. Please signup first."); setLoading(false); return; }
       if (data.status !== "success") { setError(data.message || "Invalid email or password."); setLoading(false); return; }
-      localStorage.setItem("login_detail", JSON.stringify({ token: data.token, name: data.user.name, email: data.user.email }));
+      persistLogin({ token: data.token, name: data.user.name, email: data.user.email });
       showSuccess("Welcome back!");
       setTimeout(() => { navigate("/"); window.location.reload(); }, 300);
     } catch { setError("Server error. Try again."); showError("Server error."); }
     setLoading(false);
-  }, [form, navigate]);
+  }, [form, navigate, persistLogin]);
 
   const handleRegister = useCallback(async (e) => {
     e.preventDefault();

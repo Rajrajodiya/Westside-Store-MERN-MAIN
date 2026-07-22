@@ -2,24 +2,14 @@
  * useAuth — Single source of truth for auth state.
  *
  * Principles:
- * - DRY:   Eliminates the repeated JSON.parse(localStorage.getItem("login_detail")) across 8+ components.
- * - Tell, Don't Ask:   Components call `auth.user` instead of asking localStorage "what's in there?"
- * - Law of Demeter:    Components talk to the hook, not to localStorage directly.
- * - Normalization:     Computes userKey in one place (email || emailOrPhone || "guest").
+ * - DRY:             Eliminates repeated localStorage access across 8+ components.
+ * - Tell, Don't Ask: Components call `auth.user` instead of asking localStorage.
+ * - Law of Demeter:  Components talk to the hook, not to localStorage directly.
+ * - Normalization:   Computes userKey in one place (email || emailOrPhone || "guest").
  */
 
 import { useCallback, useEffect, useState } from "react";
-
-const STORAGE_KEY = "login_detail";
-
-const parseLogin = () => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-};
+import { getLogin, clearLogin, saveLogin, getCartCount } from "../lib/storage";
 
 /** Derive the user's cart/wishlist key from their login data */
 const computeUserKey = (login) => {
@@ -28,30 +18,19 @@ const computeUserKey = (login) => {
 };
 
 export default function useAuth() {
-  const [login, setLogin] = useState(parseLogin);
+  const [login, setLogin] = useState(getLogin);
   const [cartCount, setCartCount] = useState(0);
 
   const userKey = computeUserKey(login);
 
-  // Update cart count whenever storage or cart changes
   const refreshCartCount = useCallback(() => {
-    try {
-      const raw = localStorage.getItem(`cart_${userKey}`);
-      const cart = raw ? JSON.parse(raw) : [];
-      setCartCount(cart.length);
-    } catch {
-      setCartCount(0);
-    }
+    setCartCount(getCartCount(userKey));
   }, [userKey]);
 
   useEffect(() => {
     refreshCartCount();
-    const onStorage = () => {
-      setLogin(parseLogin());
-      refreshCartCount();
-    };
+    const onStorage = () => { setLogin(getLogin()); refreshCartCount(); };
     const onCartUpdate = () => refreshCartCount();
-
     window.addEventListener("storage", onStorage);
     window.addEventListener("cartUpdated", onCartUpdate);
     return () => {
@@ -61,23 +40,25 @@ export default function useAuth() {
   }, [refreshCartCount]);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    clearLogin();
     setLogin(null);
     window.location.reload();
   }, []);
 
+  /** Persist login data after successful auth */
+  const persistLogin = useCallback((data) => {
+    saveLogin(data);
+    setLogin(data);
+  }, []);
+
   return {
-    /** Logged-in user data (or null) */
     login,
-    /** Derived key for localStorage cart/wishlist */
     userKey,
-    /** Whether the user is authenticated */
     isLoggedIn: !!login,
-    /** Number of items in cart */
     cartCount,
-    /** Logout + reload */
     logout,
-    /** Force-refresh cart count (call after adding to cart) */
     refreshCartCount,
+    /** Use this instead of localStorage.setItem in components */
+    persistLogin,
   };
 }

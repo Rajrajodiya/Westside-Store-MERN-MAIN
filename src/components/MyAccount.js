@@ -5,32 +5,30 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import LoadingSpinner from "./LoadingSpinner";
 import SeoHelmet from "./SeoHelmet";
+import useAuth from "../hooks/useAuth";
 import "../assets/styles/MyAccount.css";
 
 const MyAccount = () => {
-    const [loginDetail, setLoginDetail] = useState(null);
+    const { login: loginDetail } = useAuth();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            const loginData = JSON.parse(localStorage.getItem("login_detail"));
-            setLoginDetail(loginData);
-            if (loginData?.email) {
-                try {
-                    const response = await fetch(`/api/orders/user/${loginData.email}`, {
-                        headers: { ...(loginData?.token ? { Authorization: `Bearer ${loginData.token}` } : {}) },
-                    });
-                    const result = await response.json();
-                    if (result.status === "success") setOrders(result.results || []);
-                    else setError("Failed to load orders");
-                } catch { setError("Failed to connect to server"); }
-            }
+        if (!loginDetail?.email) { setLoading(false); return; }
+        const fetchOrders = async () => {
+            try {
+                const response = await fetch(`/api/orders/user/${loginDetail.email}`, {
+                    headers: { Authorization: `Bearer ${loginDetail.token}` },
+                });
+                const result = await response.json();
+                if (result.status === "success") setOrders(result.results || []);
+                else setError("Failed to load orders");
+            } catch { setError("Failed to connect to server"); }
             setLoading(false);
         };
-        fetchUserData();
-    }, []);
+        fetchOrders();
+    }, [loginDetail]);
 
     const formatDate = (d) => new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
     const getStatusBadge = (s) => {

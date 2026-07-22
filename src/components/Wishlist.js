@@ -1,17 +1,8 @@
 import { useCallback, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import { CartItemRow, EmptyState } from "./Cart";
+import { getWishlist, saveWishlist } from "../lib/storage";
 import "../assets/styles/cart.css";
-
-const getWishlist = key => {
-  try {
-    const raw = localStorage.getItem("wishlist_" + key);
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
-};
-
-const saveWishlist = (key, items) =>
-  localStorage.setItem("wishlist_" + key, JSON.stringify(items));
 
 export default function Wishlist() {
   const { userKey, isLoggedIn } = useAuth();

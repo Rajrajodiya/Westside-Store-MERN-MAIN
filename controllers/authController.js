@@ -12,24 +12,53 @@ const AppError = require("../utils/AppError");
 // ── Helpers (normalization at boundary) ────────────────────────────
 
 const normalizeUserInput = (body) =>
-  validate.normalize(body, ["name", "email", "phone", "password"]);
+  validate.normalize(body, ["name", "emailOrPhone", "phone", "password"]);
+
+/** Resolve a user by email OR phone */
+const findByIdentifier = async (id) => {
+  const EMAIL_RE = /\S+@\S+\.\S+/;
+  const isEmail = EMAIL_RE.test(id);
+  return isEmail
+    ? User.findOne({ email: id.toLowerCase().trim() })
+    : User.findOne({ phone: id.trim() });
+};
 
 // ── Exports ────────────────────────────────────────────────────────
 
 exports.signup = asyncHandler(async (req, res) => {
-  const { name, email, phone, password } = normalizeUserInput(req.body);
-  validate.required({ name, email, phone, password }, ["name", "email", "phone", "password"]);
-  validate.email(email);
-  validate.phone(phone);
+  const { name, emailOrPhone, phone, password } = normalizeUserInput(req.body);
+  validate.required({ name, emailOrPhone, phone, password }, ["name", "emailOrPhone", "phone", "password"]);
+
+  // emailOrPhone can be an email address or a phone number
+  const EMAIL_RE = /\S+@\S+\.\S+/;
+  const isEmail = EMAIL_RE.test(emailOrPhone);
+  const email = isEmail ? emailOrPhone.toLowerCase().trim() : undefined;
+  const phoneForCheck = isEmail ? phone.trim() : emailOrPhone.trim();
+
+  if (isEmail) {
+    validate.email(email);
+    validate.phone(phone);
+  } else {
+    validate.phone(emailOrPhone);
+  }
   validate.password(password);
 
-  const exists = await User.findOne({ email });
+  // Check by email OR phone
+  const exists = isEmail
+    ? await User.findOne({ email })
+    : await User.findOne({ phone: emailOrPhone.trim() });
   if (exists) {
     return res.json({ status: "exists", message: "User already exists. Please login." });
   }
 
   const userCount = await User.countDocuments();
-  await User.create({ name, email, phone, password, isAdmin: userCount === 0 });
+  await User.create({
+    name,
+    email: email || `${phoneForCheck}@phone.user`,
+    phone: phoneForCheck,
+    password,
+    isAdmin: userCount === 0,
+  });
 
   respond.created(res, {
     message: userCount === 0
@@ -39,10 +68,10 @@ exports.signup = asyncHandler(async (req, res) => {
 });
 
 exports.login = asyncHandler(async (req, res) => {
-  const { email, password } = normalizeUserInput(req.body);
-  validate.required({ email, password }, ["email", "password"]);
+  const { emailOrPhone, password } = normalizeUserInput(req.body);
+  validate.required({ emailOrPhone, password }, ["emailOrPhone", "password"]);
 
-  const user = await User.findOne({ email });
+  const user = await findByIdentifier(emailOrPhone);
   if (!user) {
     return res.json({ status: "notfound", message: "User not found. Please signup first." });
   }

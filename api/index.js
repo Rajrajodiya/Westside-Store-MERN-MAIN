@@ -92,6 +92,27 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// ─── Serve React Build (Monolithic — API + Frontend on same server) ─
+const buildPath = path.join(__dirname, "..", "build");
+try {
+  if (require("fs").existsSync(buildPath)) {
+    // Serve static files from the React build directory
+    app.use(express.static(buildPath));
+
+    // Catch-all for client-side routing: any non-API GET → index.html
+    app.get("*", (req, res, next) => {
+      if (!req.path.startsWith("/api/")) {
+        return res.sendFile(path.join(buildPath, "index.html"));
+      }
+      next(); // let unmatched /api/* fall through to the 404 handler
+    });
+
+    console.log(`   🏗️  Serving React build from ${buildPath}`);
+  } else {
+    console.log(`   ℹ️  No build directory found at ${buildPath} — API only`);
+  }
+} catch { }
+
 // 404 handler (Express 5 compatible — wildcard syntax changed)
 app.use("/api/", (req, res) => {
   res.status(404).json({ status: "error", message: "API endpoint not found" });
